@@ -16,7 +16,6 @@ server.addHook('onRequest', async (request, reply) => {
   const publicRoutes = [
     '/login',
     '/register',
-    '/',
     '/password-recovery',
     '/complete-signup',
   ];
