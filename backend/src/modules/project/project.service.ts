@@ -1,7 +1,7 @@
 import { ProjectRepository } from './project.repository.ts';
 import type { CreateProjectDTO, UpdateProjectDTO } from './project.types.ts';
 import { v7 as uuidv7 } from 'uuid';
-import {MailService} from'../mail/mail.service.ts'
+import { MailService } from '../mail/mail.service.ts'
 
 export class ProjectService {
   private readonly repository: ProjectRepository;
@@ -17,7 +17,8 @@ export class ProjectService {
       id: projectId,
       title: data.title,
       description: data.description,
-      structure: data.structure
+      structure: data.structure,
+      status: data.status || 'EM_ANDAMENTO',
     });
     await this.repository.addUserToProject(projectId, owner_id, 'OWNER');
     return project;
@@ -38,13 +39,22 @@ export class ProjectService {
   async delete(id: string) {
     return this.repository.delete(id);
   }
-  
-  async getProjectsForUser(userId: string) {
+
+  async getProjectsForUserWithRole(userId: string) {
     const userProjects = await this.repository.getUserProjects(userId);
-    return userProjects.map((up: any) => up.project);
+    const meusProjetos = userProjects
+      .filter((up: any) => up.role === 'OWNER')
+      .map((up: any) => ({ ...up.project, role: up.role }));
+    const colaboradorProjetos = userProjects
+      .filter((up: any) => up.role === 'MEMBER')
+      .map((up: any) => ({ ...up.project, role: up.role }));
+    return {
+      meusProjetos,
+      colaboradorProjetos
+    };
   }
 
- async getUserRole(projectId: string, userId: string) {
+  async getUserRole(projectId: string, userId: string) {
     if (!this.repository.getUserRoleInProject) throw new Error('Método getUserRoleInProject não implementado no repositório');
     const rel = await this.repository.getUserRoleInProject(projectId, userId);
     console.log('Relação usuário-projeto encontrada:', rel);

@@ -1,12 +1,14 @@
 import Fastify from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import { authRoutes } from './modules/auth/routes.ts';
+import corsPlugin from './plugins/cors.ts';
 import { projectRoutes } from './modules/project/routes.ts';
 import { userRoutes } from './modules/user/routes.ts';
 import { passwordRecoveryRoutes } from './modules/auth/password-recovery.routes.ts';
 import { completeSignupRoutes } from './modules/auth/complete-signup.routes.ts';
 
 const server = Fastify();
+server.register(corsPlugin);
 
 server.register(fastifyJwt, {
   secret: process.env.JWT_SECRET || '',

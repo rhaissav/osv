@@ -24,6 +24,11 @@ enum ProjectUserRole {
   MEMBER
 }
 
+enum ProjectStatus {
+  EM_ANDAMENTO
+  CONCLUIDO
+}
+
 model User {
   id            String           @id @default(uuid()) @map("UniqueID")
   name          String
@@ -40,6 +45,7 @@ model Project {
   created_at  DateTime         @default(now())
   users       UserOnProjects[]
   structure   Json
+  status      ProjectStatus    @default(EM_ANDAMENTO)
 }
 
 model UserOnProjects {

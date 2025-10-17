@@ -30,8 +30,8 @@ export class ProjectController {
   async getAll(request: FastifyRequest, reply: FastifyReply) {
     // @ts-ignore
     const userId = request.user.sub;
-    const projects = await service.getProjectsForUser(userId);
-    return reply.send(projects);
+    const result = await service.getProjectsForUserWithRole(userId);
+    return reply.send(result);
   }
 
   async update(request: FastifyRequest, reply: FastifyReply) {

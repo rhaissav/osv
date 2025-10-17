@@ -48,6 +48,14 @@ export const ProjectUserRole: {
 
 export type ProjectUserRole = (typeof ProjectUserRole)[keyof typeof ProjectUserRole]
 
+
+export const ProjectStatus: {
+  EM_ANDAMENTO: 'EM_ANDAMENTO',
+  CONCLUIDO: 'CONCLUIDO'
+};
+
+export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -57,6 +65,10 @@ export const Role: typeof $Enums.Role
 export type ProjectUserRole = $Enums.ProjectUserRole
 
 export const ProjectUserRole: typeof $Enums.ProjectUserRole
+
+export type ProjectStatus = $Enums.ProjectStatus
+
+export const ProjectStatus: typeof $Enums.ProjectStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -2217,6 +2229,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     created_at: Date | null
+    status: $Enums.ProjectStatus | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -2224,6 +2237,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     created_at: Date | null
+    status: $Enums.ProjectStatus | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -2232,6 +2246,7 @@ export namespace Prisma {
     description: number
     created_at: number
     structure: number
+    status: number
     _all: number
   }
 
@@ -2241,6 +2256,7 @@ export namespace Prisma {
     title?: true
     description?: true
     created_at?: true
+    status?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -2248,6 +2264,7 @@ export namespace Prisma {
     title?: true
     description?: true
     created_at?: true
+    status?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -2256,6 +2273,7 @@ export namespace Prisma {
     description?: true
     created_at?: true
     structure?: true
+    status?: true
     _all?: true
   }
 
@@ -2337,6 +2355,7 @@ export namespace Prisma {
     description: string | null
     created_at: Date
     structure: JsonValue
+    status: $Enums.ProjectStatus
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -2362,6 +2381,7 @@ export namespace Prisma {
     description?: boolean
     created_at?: boolean
     structure?: boolean
+    status?: boolean
     users?: boolean | Project$usersArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -2372,6 +2392,7 @@ export namespace Prisma {
     description?: boolean
     created_at?: boolean
     structure?: boolean
+    status?: boolean
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2380,6 +2401,7 @@ export namespace Prisma {
     description?: boolean
     created_at?: boolean
     structure?: boolean
+    status?: boolean
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
@@ -2388,9 +2410,10 @@ export namespace Prisma {
     description?: boolean
     created_at?: boolean
     structure?: boolean
+    status?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "created_at" | "structure", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "created_at" | "structure" | "status", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Project$usersArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -2409,6 +2432,7 @@ export namespace Prisma {
       description: string | null
       created_at: Date
       structure: Prisma.JsonValue
+      status: $Enums.ProjectStatus
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -2838,6 +2862,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Project", 'String'>
     readonly created_at: FieldRef<"Project", 'DateTime'>
     readonly structure: FieldRef<"Project", 'Json'>
+    readonly status: FieldRef<"Project", 'ProjectStatus'>
   }
     
 
@@ -4338,7 +4363,8 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     created_at: 'created_at',
-    structure: 'structure'
+    structure: 'structure',
+    status: 'status'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -4455,6 +4481,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ProjectStatus'
+   */
+  export type EnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ProjectStatus[]'
+   */
+  export type ListEnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'ProjectUserRole'
    */
   export type EnumProjectUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectUserRole'>
@@ -4549,6 +4589,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Project"> | string | null
     created_at?: DateTimeFilter<"Project"> | Date | string
     structure?: JsonFilter<"Project">
+    status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     users?: UserOnProjectsListRelationFilter
   }
 
@@ -4558,6 +4599,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     created_at?: SortOrder
     structure?: SortOrder
+    status?: SortOrder
     users?: UserOnProjectsOrderByRelationAggregateInput
   }
 
@@ -4570,6 +4612,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Project"> | string | null
     created_at?: DateTimeFilter<"Project"> | Date | string
     structure?: JsonFilter<"Project">
+    status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     users?: UserOnProjectsListRelationFilter
   }, "id">
 
@@ -4579,6 +4622,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     created_at?: SortOrder
     structure?: SortOrder
+    status?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -4593,6 +4637,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Project"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     structure?: JsonWithAggregatesFilter<"Project">
+    status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
   }
 
   export type UserOnProjectsWhereInput = {
@@ -4710,6 +4755,7 @@ export namespace Prisma {
     description?: string | null
     created_at?: Date | string
     structure: JsonNullValueInput | InputJsonValue
+    status?: $Enums.ProjectStatus
     users?: UserOnProjectsCreateNestedManyWithoutProjectInput
   }
 
@@ -4719,6 +4765,7 @@ export namespace Prisma {
     description?: string | null
     created_at?: Date | string
     structure: JsonNullValueInput | InputJsonValue
+    status?: $Enums.ProjectStatus
     users?: UserOnProjectsUncheckedCreateNestedManyWithoutProjectInput
   }
 
@@ -4728,6 +4775,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     users?: UserOnProjectsUpdateManyWithoutProjectNestedInput
   }
 
@@ -4737,6 +4785,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     users?: UserOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
   }
 
@@ -4746,6 +4795,7 @@ export namespace Prisma {
     description?: string | null
     created_at?: Date | string
     structure: JsonNullValueInput | InputJsonValue
+    status?: $Enums.ProjectStatus
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -4754,6 +4804,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -4762,6 +4813,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
 
   export type UserOnProjectsCreateInput = {
@@ -4937,6 +4989,13 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type EnumProjectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -4948,6 +5007,7 @@ export namespace Prisma {
     description?: SortOrder
     created_at?: SortOrder
     structure?: SortOrder
+    status?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -4955,6 +5015,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     created_at?: SortOrder
+    status?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -4962,6 +5023,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     created_at?: SortOrder
+    status?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -5020,6 +5082,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProjectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProjectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProjectStatusFilter<$PrismaModel>
   }
 
   export type EnumProjectUserRoleFilter<$PrismaModel = never> = {
@@ -5142,6 +5214,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type EnumProjectStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ProjectStatus
   }
 
   export type UserOnProjectsUpdateManyWithoutProjectNestedInput = {
@@ -5288,6 +5364,13 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -5351,6 +5434,16 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProjectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProjectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProjectStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumProjectUserRoleFilter<$PrismaModel = never> = {
@@ -5478,6 +5571,7 @@ export namespace Prisma {
     description?: string | null
     created_at?: Date | string
     structure: JsonNullValueInput | InputJsonValue
+    status?: $Enums.ProjectStatus
   }
 
   export type ProjectUncheckedCreateWithoutUsersInput = {
@@ -5486,6 +5580,7 @@ export namespace Prisma {
     description?: string | null
     created_at?: Date | string
     structure: JsonNullValueInput | InputJsonValue
+    status?: $Enums.ProjectStatus
   }
 
   export type ProjectCreateOrConnectWithoutUsersInput = {
@@ -5537,6 +5632,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
 
   export type ProjectUncheckedUpdateWithoutUsersInput = {
@@ -5545,6 +5641,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
 
   export type UserOnProjectsCreateManyUserInput = {

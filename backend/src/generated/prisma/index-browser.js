@@ -133,7 +133,8 @@ exports.Prisma.ProjectScalarFieldEnum = {
   title: 'title',
   description: 'description',
   created_at: 'created_at',
-  structure: 'structure'
+  structure: 'structure',
+  status: 'status'
 };
 
 exports.Prisma.UserOnProjectsScalarFieldEnum = {
@@ -169,6 +170,11 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
   USER: 'USER'
+};
+
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  EM_ANDAMENTO: 'EM_ANDAMENTO',
+  CONCLUIDO: 'CONCLUIDO'
 };
 
 exports.ProjectUserRole = exports.$Enums.ProjectUserRole = {
