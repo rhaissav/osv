@@ -4,7 +4,8 @@ import ElementModalForm from '../components/ElementModalForm';
 import RelationModal from '../components/RelationModal';
 import SetTheoryView from '../components/SetTheoryView';
 import { useParams } from 'react-router-dom';
-import { createProject, updateProject, getProject } from '../api/project';
+import { createProject, updateProject, getProject, addProjectMember } from '../api/project';
+import Button from '../components/Button';
 import {
     Plus,
     Trash2,
@@ -91,6 +92,12 @@ const OOSetModelingTool = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    // Estado para modal de colaborador
+    const [showAddCollaborator, setShowAddCollaborator] = useState(false);
+    const [collabEmail, setCollabEmail] = useState('');
+    const [collabError, setCollabError] = useState('');
+    const [collabSuccess, setCollabSuccess] = useState('');
+    const [collabLoading, setCollabLoading] = useState(false);
 
     // Carregar dados do projeto se estiver em modo edição
     useEffect(() => {
@@ -340,13 +347,128 @@ const OOSetModelingTool = () => {
                         <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Visualização (Teoria dos Conjuntos)</h2>
                         <div className="flex gap-2">
                             <button
-                                className="px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-sm"
+                                className="px-4 py-1.5 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-xs"
                                 onClick={handleSaveProject}
                                 disabled={loading}
                             >
                                 Salvar Projeto
                             </button>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                            <button
+                                className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs"
+                                onClick={() => setShowAddCollaborator(true)}
+                                type="button"
+                            >
+                                Adicionar colaborador
+                            </button>
+                            {/* Modal de adicionar colaborador */}
+                            {showAddCollaborator && (
+                                <Modal onClose={() => {
+                                    setShowAddCollaborator(false);
+                                    setCollabEmail('');
+                                    setCollabError('');
+                                    setCollabSuccess('');
+                                }}>
+                                    <div className="w-full max-w-xs mx-auto p-0 flex flex-col items-center justify-center text-center">
+                                        {collabSuccess ? (
+                                            <div className="flex flex-col items-center justify-center gap-2 py-6">
+                                                <div className="rounded-full bg-emerald-100 p-2 flex items-center justify-center mb-1">
+                                                    <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                                </div>
+                                                <h3 className="text-lg font-semibold mb-1">Colaborador adicionado!</h3>
+                                                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-2">O usuário foi adicionado ao projeto com sucesso.</p>
+                                                <Button
+                                                    variant="success"
+                                                    className="px-4 py-1.5 text-xs w-full"
+                                                    onClick={() => {
+                                                        setShowAddCollaborator(false);
+                                                        setCollabEmail('');
+                                                        setCollabError('');
+                                                        setCollabSuccess('');
+                                                    }}
+                                                >
+                                                    Fechar
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <form className="flex flex-col items-center justify-center w-full gap-0 py-6" onSubmit={e => { e.preventDefault(); }}>
+                                                <h3 className="text-lg font-semibold mb-3 w-full">Adicionar colaborador</h3>
+                                                <label className="block text-sm font-medium mb-1 w-full text-left">E-mail do colaborador</label>
+                                                <input
+                                                    type="email"
+                                                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 mb-1"
+                                                    placeholder="email@exemplo.com"
+                                                    value={collabEmail}
+                                                    onChange={e => setCollabEmail(e.target.value)}
+                                                    disabled={collabLoading}
+                                                    autoFocus
+                                                />
+                                                {collabError && <div className="text-red-600 text-xs mb-1 w-full text-left">{collabError}</div>}
+                                                <div className="flex flex-row gap-2 mt-3 w-full">
+                                                    <Button
+                                                        variant="primary"
+                                                        className="flex-1 px-3 py-1.5 text-xs"
+                                                        disabled={collabLoading || !collabEmail}
+                                                        onClick={async () => {
+                                                            setCollabError('');
+                                                            setCollabSuccess('');
+                                                            setCollabLoading(true);
+                                                            try {
+                                                                if (!projectId) {
+                                                                    setCollabError('Salve o projeto antes de adicionar colaboradores.');
+                                                                    setCollabLoading(false);
+                                                                    return;
+                                                                }
+                                                                await addProjectMember(projectId, collabEmail);
+                                                                setCollabSuccess('Colaborador adicionado com sucesso!');
+                                                                setCollabEmail('');
+                                                            } catch (err: any) {
+                                                                setCollabError(err?.response?.data?.error || 'Erro ao adicionar colaborador.');
+                                                            } finally {
+                                                                setCollabLoading(false);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {collabLoading ? 'Adicionando...' : 'Adicionar'}
+                                                    </Button>
+                                                    <Button
+                                                        variant="secondary"
+                                                        className="flex-1 px-3 py-1.5 text-xs"
+                                                        onClick={() => {
+                                                            setShowAddCollaborator(false);
+                                                            setCollabEmail('');
+                                                            setCollabError('');
+                                                            setCollabSuccess('');
+                                                        }}
+                                                        disabled={collabLoading}
+                                                    >
+                                                        Cancelar
+                                                    </Button>
+                                                </div>
+                                            </form>
+                                        )}
+                                    </div>
+                                </Modal>
+                            )}
+                            <button
+                                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-xs"
+                                onClick={async () => {
+                                    if (!projectId) return;
+                                    try {
+                                        const { exportProjectPdf } = await import('../api/project');
+                                        const pdfBlob = await exportProjectPdf(projectId);
+                                        const url = window.URL.createObjectURL(new Blob([pdfBlob], { type: 'application/pdf' }));
+                                        const link = document.createElement('a');
+                                        link.href = url;
+                                        link.setAttribute('download', `project-${projectId}.pdf`);
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        link.parentNode?.removeChild(link);
+                                        window.URL.revokeObjectURL(url);
+                                    } catch (err) {
+                                        alert('Erro ao exportar PDF');
+                                    }
+                                }}
+                            >
                                 Exportar
                             </button>
                         </div>

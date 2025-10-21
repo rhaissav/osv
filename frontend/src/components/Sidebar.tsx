@@ -9,7 +9,11 @@ const menuItems = [
     { icon: <FaUser />, label: 'Perfil', to: '/profile', color: 'bg-green-500' },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+    onExpand?: (expanded: boolean) => void;
+}
+
+export default function Sidebar({ onExpand }: SidebarProps) {
     const [expanded, setExpanded] = useState(false);
     const navigate = useNavigate();
 
@@ -32,9 +36,14 @@ export default function Sidebar() {
         navigate('/login');
     }
 
+    // Notifica o parent sobre o estado expandido
+    React.useEffect(() => {
+        if (onExpand) onExpand(expanded);
+    }, [expanded, onExpand]);
+
     return (
         <aside
-            className={`h-screen flex flex-col justify-between bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ${expanded ? 'w-60' : 'w-20'} group`}
+            className={`fixed top-0 left-0 h-screen flex flex-col justify-between bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ${expanded ? 'w-60' : 'w-20'} group z-30`}
             onMouseEnter={() => setExpanded(true)}
             onMouseLeave={() => setExpanded(false)}
         >

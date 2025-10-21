@@ -30,3 +30,17 @@ export async function getProject(id: string) {
   const response = await api.get(`/projects/${id}`);
   return response.data;
 }
+
+
+export async function addProjectMember(projectId: string, email: string) {
+  const response = await api.post(`/projects/${projectId}/users`, { email });
+  return response.data;
+}
+
+
+export async function exportProjectPdf(projectId: string) {
+  const response = await api.get(`/projects/${projectId}/export/pdf`, {
+    responseType: 'blob',
+  });
+  return response.data;
+}

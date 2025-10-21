@@ -4,7 +4,6 @@ import ConfirmModal from '../components/ConfirmModal';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { deleteProject } from '../api/project';
-import Button from '../components/Button';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 interface Project {
@@ -22,21 +21,21 @@ export default function Projects() {
     const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     // Função para remover projeto
-        async function handleDeleteProject() {
-            if (!projectToDelete) return;
-            try {
-                await deleteProject(projectToDelete.id);
-                setMeusProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
-                setColaboradorProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
-                setDeleteSuccess(true);
-            } catch {
-                setError('Erro ao remover projeto.');
-            } finally {
-                setModalOpen(false);
-                setProjectToDelete(null);
-                setTimeout(() => setDeleteSuccess(false), 3000);
-            }
+    async function handleDeleteProject() {
+        if (!projectToDelete) return;
+        try {
+            await deleteProject(projectToDelete.id);
+            setMeusProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
+            setColaboradorProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
+            setDeleteSuccess(true);
+        } catch {
+            setError('Erro ao remover projeto.');
+        } finally {
+            setModalOpen(false);
+            setProjectToDelete(null);
+            setTimeout(() => setDeleteSuccess(false), 3000);
         }
+    }
     const [meusProjetos, setMeusProjetos] = useState<Project[]>([]);
     const [colaboradorProjetos, setColaboradorProjetos] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
@@ -68,15 +67,15 @@ export default function Projects() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-10 px-2 md:px-8">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+                <div className="flex items-center justify-between mb-6 gap-4">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Projetos</h1>
-                    <Button
-                        variant="primary"
-                        className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg shadow"
+                    <button
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm flex items-center gap-2"
                         onClick={() => navigate('/projects/new')}
                     >
-                        <FaPlus /> Novo projeto
-                    </Button>
+                        <FaPlus className="text-base" />
+                        <span className="hidden sm:inline">Novo projeto</span>
+                    </button>
                 </div>
                 <div className="flex gap-2 border-b mb-4">
                     <button

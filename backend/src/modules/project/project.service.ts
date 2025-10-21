@@ -39,17 +39,17 @@ export class ProjectService {
 
   async delete(id: string) {
     console.log('Dentro do service, deletando projeto com id:', id);
-      // Remove todos os vínculos de usuários antes de deletar o projeto
-      if (this.repository.removeAllUsersFromProject) {
-        await this.repository.removeAllUsersFromProject(id);
-      } else {
-        // fallback manual se não existir método
-        const repo: any = this.repository;
-        if (repo.prisma && repo.prisma.userOnProjects) {
-          await repo.prisma.userOnProjects.deleteMany({ where: { project_id: id } });
-        }
+    // Remove todos os vínculos de usuários antes de deletar o projeto
+    if (this.repository.removeAllUsersFromProject) {
+      await this.repository.removeAllUsersFromProject(id);
+    } else {
+      // fallback manual se não existir método
+      const repo: any = this.repository;
+      if (repo.prisma && repo.prisma.userOnProjects) {
+        await repo.prisma.userOnProjects.deleteMany({ where: { project_id: id } });
       }
-      return this.repository.delete(id);
+    }
+    return this.repository.delete(id);
   }
 
   async getProjectsForUserWithRole(userId: string) {
@@ -73,26 +73,43 @@ export class ProjectService {
     return rel?.role;
   }
 
-  async addMemberByEmail(projectId: string, email: string, projectTitle?: string) {
+  async addMemberByEmail(projectId: string, email: string) {
+    const project = await this.repository.findById(projectId);
+    const title = project && 'title' in project ? project.title : undefined;
+
     const user = await this.repository.findUserByEmail(email);
     let userId: string;
     let created = false;
     let inviteLink: string;
+    let isCompleted = true;
+    let alreadyLinked = false;
+
     if (user) {
+      console.log('user', user);
       userId = user.id;
-      inviteLink = `${process.env.APP_URL}/login`;
+      const isPending = !user.password_hash || user.password_hash.trim() === '';
+      const userOnProject = await this.repository.getUserRoleInProject(projectId, userId);
+      alreadyLinked = !!userOnProject;
+      if (isPending) {
+        inviteLink = `${process.env.APP_URL}/complete-signup?email=${encodeURIComponent(email)}`;
+        isCompleted = false;
+      } else {
+        inviteLink = `${process.env.APP_URL}/login`;
+      }
     } else {
-      // Cria usuário "pendente" (senha vazia, role USER)
       const newUser = await this.repository.createPendingUser(email);
       userId = newUser.id;
       created = true;
       inviteLink = `${process.env.APP_URL}/complete-signup?email=${encodeURIComponent(email)}`;
+      isCompleted = false;
     }
-    await this.repository.addUserToProject(projectId, userId, 'MEMBER');
+    if (!alreadyLinked) {
+      await this.repository.addUserToProject(projectId, userId, 'MEMBER');
+    }
     await this.mailService.sendProjectInvite(
       email,
-      projectTitle || 'Projeto',
-      !created,
+      title || 'Projeto',
+      isCompleted,
       inviteLink
     );
     return { userId, created };

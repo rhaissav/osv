@@ -8,15 +8,19 @@ import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import ProjectCreate from './pages/ProjectCreate';
 import Sidebar from './components/Sidebar';
+import React, { useState } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import './index.css';
 
 
 function ProtectedLayout() {
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  // Handler para receber o estado do Sidebar
+  const handleSidebarExpand = (expanded: boolean) => setSidebarExpanded(expanded);
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="flex-1"><Outlet /></main>
+      <Sidebar onExpand={handleSidebarExpand} />
+      <main className={`flex-1 transition-all duration-300 ${sidebarExpanded ? 'pl-60' : 'pl-20'}`}><Outlet /></main>
     </div>
   );
 }
