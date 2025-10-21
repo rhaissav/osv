@@ -20,13 +20,14 @@ export class ProjectService {
       description: data.description,
       structure: data.structure,
       status: data.status || 'EM_ANDAMENTO',
+      updatedAt: new Date(),
     });
     await this.repository.addUserToProject(projectId, owner_id, 'OWNER');
     return project;
   }
 
   async findById(id: string) {
-    return this.repository.findById(id);
+  return this.repository.findById(id);
   }
 
   async findAll() {
@@ -34,7 +35,7 @@ export class ProjectService {
   }
 
   async update(id: string, data: UpdateProjectDTO) {
-    return this.repository.update(id, data);
+  return this.repository.update(id, data);
   }
 
   async delete(id: string) {

@@ -1160,6 +1160,8 @@ export namespace Prisma {
     email: string | null
     password_hash: string | null
     role: $Enums.Role | null
+    passwordRecoveryToken: string | null
+    passwordRecoveryTokenExpires: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1168,6 +1170,8 @@ export namespace Prisma {
     email: string | null
     password_hash: string | null
     role: $Enums.Role | null
+    passwordRecoveryToken: string | null
+    passwordRecoveryTokenExpires: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1176,6 +1180,8 @@ export namespace Prisma {
     email: number
     password_hash: number
     role: number
+    passwordRecoveryToken: number
+    passwordRecoveryTokenExpires: number
     _all: number
   }
 
@@ -1186,6 +1192,8 @@ export namespace Prisma {
     email?: true
     password_hash?: true
     role?: true
+    passwordRecoveryToken?: true
+    passwordRecoveryTokenExpires?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1194,6 +1202,8 @@ export namespace Prisma {
     email?: true
     password_hash?: true
     role?: true
+    passwordRecoveryToken?: true
+    passwordRecoveryTokenExpires?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1202,6 +1212,8 @@ export namespace Prisma {
     email?: true
     password_hash?: true
     role?: true
+    passwordRecoveryToken?: true
+    passwordRecoveryTokenExpires?: true
     _all?: true
   }
 
@@ -1283,6 +1295,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken: string | null
+    passwordRecoveryTokenExpires: Date | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1308,6 +1322,8 @@ export namespace Prisma {
     email?: boolean
     password_hash?: boolean
     role?: boolean
+    passwordRecoveryToken?: boolean
+    passwordRecoveryTokenExpires?: boolean
     projects?: boolean | User$projectsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -1318,6 +1334,8 @@ export namespace Prisma {
     email?: boolean
     password_hash?: boolean
     role?: boolean
+    passwordRecoveryToken?: boolean
+    passwordRecoveryTokenExpires?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1326,6 +1344,8 @@ export namespace Prisma {
     email?: boolean
     password_hash?: boolean
     role?: boolean
+    passwordRecoveryToken?: boolean
+    passwordRecoveryTokenExpires?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -1334,9 +1354,11 @@ export namespace Prisma {
     email?: boolean
     password_hash?: boolean
     role?: boolean
+    passwordRecoveryToken?: boolean
+    passwordRecoveryTokenExpires?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password_hash" | "role", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password_hash" | "role" | "passwordRecoveryToken" | "passwordRecoveryTokenExpires", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | User$projectsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1355,6 +1377,8 @@ export namespace Prisma {
       email: string
       password_hash: string
       role: $Enums.Role
+      passwordRecoveryToken: string | null
+      passwordRecoveryTokenExpires: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -1784,6 +1808,8 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly password_hash: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'Role'>
+    readonly passwordRecoveryToken: FieldRef<"User", 'String'>
+    readonly passwordRecoveryTokenExpires: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -2228,7 +2254,8 @@ export namespace Prisma {
     id: string | null
     title: string | null
     description: string | null
-    created_at: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
     status: $Enums.ProjectStatus | null
   }
 
@@ -2236,7 +2263,8 @@ export namespace Prisma {
     id: string | null
     title: string | null
     description: string | null
-    created_at: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
     status: $Enums.ProjectStatus | null
   }
 
@@ -2244,7 +2272,8 @@ export namespace Prisma {
     id: number
     title: number
     description: number
-    created_at: number
+    createdAt: number
+    updatedAt: number
     structure: number
     status: number
     _all: number
@@ -2255,7 +2284,8 @@ export namespace Prisma {
     id?: true
     title?: true
     description?: true
-    created_at?: true
+    createdAt?: true
+    updatedAt?: true
     status?: true
   }
 
@@ -2263,7 +2293,8 @@ export namespace Prisma {
     id?: true
     title?: true
     description?: true
-    created_at?: true
+    createdAt?: true
+    updatedAt?: true
     status?: true
   }
 
@@ -2271,7 +2302,8 @@ export namespace Prisma {
     id?: true
     title?: true
     description?: true
-    created_at?: true
+    createdAt?: true
+    updatedAt?: true
     structure?: true
     status?: true
     _all?: true
@@ -2353,7 +2385,8 @@ export namespace Prisma {
     id: string
     title: string
     description: string | null
-    created_at: Date
+    createdAt: Date
+    updatedAt: Date
     structure: JsonValue
     status: $Enums.ProjectStatus
     _count: ProjectCountAggregateOutputType | null
@@ -2379,7 +2412,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     description?: boolean
-    created_at?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     structure?: boolean
     status?: boolean
     users?: boolean | Project$usersArgs<ExtArgs>
@@ -2390,7 +2424,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     description?: boolean
-    created_at?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     structure?: boolean
     status?: boolean
   }, ExtArgs["result"]["project"]>
@@ -2399,7 +2434,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     description?: boolean
-    created_at?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     structure?: boolean
     status?: boolean
   }, ExtArgs["result"]["project"]>
@@ -2408,12 +2444,13 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     description?: boolean
-    created_at?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     structure?: boolean
     status?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "created_at" | "structure" | "status", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "createdAt" | "updatedAt" | "structure" | "status", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Project$usersArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -2430,7 +2467,8 @@ export namespace Prisma {
       id: string
       title: string
       description: string | null
-      created_at: Date
+      createdAt: Date
+      updatedAt: Date
       structure: Prisma.JsonValue
       status: $Enums.ProjectStatus
     }, ExtArgs["result"]["project"]>
@@ -2860,7 +2898,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Project", 'String'>
     readonly title: FieldRef<"Project", 'String'>
     readonly description: FieldRef<"Project", 'String'>
-    readonly created_at: FieldRef<"Project", 'DateTime'>
+    readonly createdAt: FieldRef<"Project", 'DateTime'>
+    readonly updatedAt: FieldRef<"Project", 'DateTime'>
     readonly structure: FieldRef<"Project", 'Json'>
     readonly status: FieldRef<"Project", 'ProjectStatus'>
   }
@@ -4352,7 +4391,9 @@ export namespace Prisma {
     name: 'name',
     email: 'email',
     password_hash: 'password_hash',
-    role: 'role'
+    role: 'role',
+    passwordRecoveryToken: 'passwordRecoveryToken',
+    passwordRecoveryTokenExpires: 'passwordRecoveryTokenExpires'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -4362,7 +4403,8 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     description: 'description',
-    created_at: 'created_at',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     structure: 'structure',
     status: 'status'
   };
@@ -4402,6 +4444,14 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   export const JsonNullValueFilter: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull,
@@ -4409,14 +4459,6 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -4534,6 +4576,8 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     password_hash?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
+    passwordRecoveryToken?: StringNullableFilter<"User"> | string | null
+    passwordRecoveryTokenExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     projects?: UserOnProjectsListRelationFilter
   }
 
@@ -4543,20 +4587,24 @@ export namespace Prisma {
     email?: SortOrder
     password_hash?: SortOrder
     role?: SortOrder
+    passwordRecoveryToken?: SortOrderInput | SortOrder
+    passwordRecoveryTokenExpires?: SortOrderInput | SortOrder
     projects?: UserOnProjectsOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     email?: string
+    passwordRecoveryToken?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
     password_hash?: StringFilter<"User"> | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
+    passwordRecoveryTokenExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     projects?: UserOnProjectsListRelationFilter
-  }, "id" | "email">
+  }, "id" | "email" | "passwordRecoveryToken">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -4564,6 +4612,8 @@ export namespace Prisma {
     email?: SortOrder
     password_hash?: SortOrder
     role?: SortOrder
+    passwordRecoveryToken?: SortOrderInput | SortOrder
+    passwordRecoveryTokenExpires?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -4578,6 +4628,8 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     password_hash?: StringWithAggregatesFilter<"User"> | string
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
+    passwordRecoveryToken?: StringNullableWithAggregatesFilter<"User"> | string | null
+    passwordRecoveryTokenExpires?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type ProjectWhereInput = {
@@ -4587,7 +4639,8 @@ export namespace Prisma {
     id?: StringFilter<"Project"> | string
     title?: StringFilter<"Project"> | string
     description?: StringNullableFilter<"Project"> | string | null
-    created_at?: DateTimeFilter<"Project"> | Date | string
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
     structure?: JsonFilter<"Project">
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     users?: UserOnProjectsListRelationFilter
@@ -4597,7 +4650,8 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
-    created_at?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     structure?: SortOrder
     status?: SortOrder
     users?: UserOnProjectsOrderByRelationAggregateInput
@@ -4610,7 +4664,8 @@ export namespace Prisma {
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     title?: StringFilter<"Project"> | string
     description?: StringNullableFilter<"Project"> | string | null
-    created_at?: DateTimeFilter<"Project"> | Date | string
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
     structure?: JsonFilter<"Project">
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     users?: UserOnProjectsListRelationFilter
@@ -4620,7 +4675,8 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
-    created_at?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     structure?: SortOrder
     status?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
@@ -4635,7 +4691,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Project"> | string
     title?: StringWithAggregatesFilter<"Project"> | string
     description?: StringNullableWithAggregatesFilter<"Project"> | string | null
-    created_at?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     structure?: JsonWithAggregatesFilter<"Project">
     status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
   }
@@ -4695,6 +4752,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken?: string | null
+    passwordRecoveryTokenExpires?: Date | string | null
     projects?: UserOnProjectsCreateNestedManyWithoutUserInput
   }
 
@@ -4704,6 +4763,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken?: string | null
+    passwordRecoveryTokenExpires?: Date | string | null
     projects?: UserOnProjectsUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -4713,6 +4774,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projects?: UserOnProjectsUpdateManyWithoutUserNestedInput
   }
 
@@ -4722,6 +4785,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projects?: UserOnProjectsUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -4731,6 +4796,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken?: string | null
+    passwordRecoveryTokenExpires?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -4739,6 +4806,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -4747,13 +4816,16 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ProjectCreateInput = {
     id?: string
     title: string
     description?: string | null
-    created_at?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     structure: JsonNullValueInput | InputJsonValue
     status?: $Enums.ProjectStatus
     users?: UserOnProjectsCreateNestedManyWithoutProjectInput
@@ -4763,7 +4835,8 @@ export namespace Prisma {
     id?: string
     title: string
     description?: string | null
-    created_at?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     structure: JsonNullValueInput | InputJsonValue
     status?: $Enums.ProjectStatus
     users?: UserOnProjectsUncheckedCreateNestedManyWithoutProjectInput
@@ -4773,7 +4846,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     users?: UserOnProjectsUpdateManyWithoutProjectNestedInput
@@ -4783,7 +4857,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     users?: UserOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
@@ -4793,7 +4868,8 @@ export namespace Prisma {
     id?: string
     title: string
     description?: string | null
-    created_at?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     structure: JsonNullValueInput | InputJsonValue
     status?: $Enums.ProjectStatus
   }
@@ -4802,7 +4878,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
@@ -4811,7 +4888,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
@@ -4878,10 +4956,41 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type UserOnProjectsListRelationFilter = {
     every?: UserOnProjectsWhereInput
     some?: UserOnProjectsWhereInput
     none?: UserOnProjectsWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type UserOnProjectsOrderByRelationAggregateInput = {
@@ -4894,6 +5003,8 @@ export namespace Prisma {
     email?: SortOrder
     password_hash?: SortOrder
     role?: SortOrder
+    passwordRecoveryToken?: SortOrder
+    passwordRecoveryTokenExpires?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -4902,6 +5013,8 @@ export namespace Prisma {
     email?: SortOrder
     password_hash?: SortOrder
     role?: SortOrder
+    passwordRecoveryToken?: SortOrder
+    passwordRecoveryTokenExpires?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -4910,6 +5023,8 @@ export namespace Prisma {
     email?: SortOrder
     password_hash?: SortOrder
     role?: SortOrder
+    passwordRecoveryToken?: SortOrder
+    passwordRecoveryTokenExpires?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -4940,7 +5055,7 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -4952,7 +5067,24 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -4996,16 +5128,12 @@ export namespace Prisma {
     not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
-  }
-
   export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    created_at?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     structure?: SortOrder
     status?: SortOrder
   }
@@ -5014,7 +5142,8 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    created_at?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     status?: SortOrder
   }
 
@@ -5022,26 +5151,9 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    created_at?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     status?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -5166,6 +5278,14 @@ export namespace Prisma {
     set?: $Enums.Role
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type UserOnProjectsUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserOnProjectsCreateWithoutUserInput, UserOnProjectsUncheckedCreateWithoutUserInput> | UserOnProjectsCreateWithoutUserInput[] | UserOnProjectsUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserOnProjectsCreateOrConnectWithoutUserInput | UserOnProjectsCreateOrConnectWithoutUserInput[]
@@ -5206,10 +5326,6 @@ export namespace Prisma {
     connectOrCreate?: UserOnProjectsCreateOrConnectWithoutProjectInput | UserOnProjectsCreateOrConnectWithoutProjectInput[]
     createMany?: UserOnProjectsCreateManyProjectInputEnvelope
     connect?: UserOnProjectsWhereUniqueInput | UserOnProjectsWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -5301,6 +5417,31 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -5339,38 +5480,6 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -5397,6 +5506,38 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -5550,6 +5691,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken?: string | null
+    passwordRecoveryTokenExpires?: Date | string | null
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -5558,6 +5701,8 @@ export namespace Prisma {
     email: string
     password_hash: string
     role: $Enums.Role
+    passwordRecoveryToken?: string | null
+    passwordRecoveryTokenExpires?: Date | string | null
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -5569,7 +5714,8 @@ export namespace Prisma {
     id?: string
     title: string
     description?: string | null
-    created_at?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     structure: JsonNullValueInput | InputJsonValue
     status?: $Enums.ProjectStatus
   }
@@ -5578,7 +5724,8 @@ export namespace Prisma {
     id?: string
     title: string
     description?: string | null
-    created_at?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
     structure: JsonNullValueInput | InputJsonValue
     status?: $Enums.ProjectStatus
   }
@@ -5605,6 +5752,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -5613,6 +5762,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password_hash?: StringFieldUpdateOperationsInput | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    passwordRecoveryToken?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordRecoveryTokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ProjectUpsertWithoutUsersInput = {
@@ -5630,7 +5781,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }
@@ -5639,7 +5791,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     structure?: JsonNullValueInput | InputJsonValue
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   }

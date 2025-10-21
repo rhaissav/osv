@@ -23,9 +23,10 @@ export class MailService {
   }
 
   async sendPasswordRecovery(to: string, token: string) {
-    const appName = 'Object Visual Studio';
-    const aboutUrl = `${process.env.APP_URL}/about`;
-    const link = `${process.env.APP_URL}/reset-password?token=${token}`;
+    const appName = 'Object Set Visualizer';
+    const appUrl = 'http://localhost:5173';
+    const aboutUrl = `${appUrl}/about`;
+    const link = `${appUrl}/reset-password?token=${token}`;
     const baseStyle = `font-family: Arial, Helvetica, sans-serif; background: #f6f8fa; margin:0; padding:0;`;
     const cardStyle = `background: #fff; max-width: 420px; margin: 32px auto; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px; text-align: center;`;
     const titleStyle = `font-size: 1.3rem; color: #2563eb; font-weight: bold; margin-bottom: 12px;`;

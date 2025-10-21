@@ -19,6 +19,7 @@ server.addHook('onRequest', async (request, reply) => {
     '/login',
     '/register',
     '/password-recovery',
+    '/reset-password',
     '/complete-signup',
   ];
   if (publicRoutes.some(route => request.url.startsWith(route))) {

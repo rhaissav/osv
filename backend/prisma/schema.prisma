@@ -36,13 +36,16 @@ model User {
   password_hash    String
   role             Role
   projects         UserOnProjects[]
+  passwordRecoveryToken String? @unique
+  passwordRecoveryTokenExpires DateTime?
 }
 
 model Project {
   id          String   @id @default(uuid()) @map("UniqueID")
   title       String
   description String?
-  created_at  DateTime @default(now())
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
   users       UserOnProjects[]
   structure   Json
   status      ProjectStatus @default(EM_ANDAMENTO)

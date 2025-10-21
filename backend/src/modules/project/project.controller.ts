@@ -59,6 +59,7 @@ export class ProjectController {
   }
 
   async exportToPdf(request: FastifyRequest, reply: FastifyReply) {
+    const puppeteer = await import('puppeteer');
     const { id } = request.params as any;
     // @ts-ignore
     const userId = request.user.sub;
@@ -66,17 +67,40 @@ export class ProjectController {
     if (!role) {
       return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
     }
-    const project = await service.findById(id);
-    if (!project) return reply.code(404).send({ error: 'Projeto não encontrado' });
-    const doc = new PDFDocument();
+    // Recupera o token JWT do header Authorization
+    const authHeader = request.headers['authorization'] || '';
+    const token = authHeader.replace('Bearer ', '');
+    // URL do frontend para visualização de impressão
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const printViewUrl = `${frontendUrl}/project/${id}/print-view`;
+
+    const browser = await puppeteer.default.launch({ headless: true });
+    const page = await browser.newPage();
+    // Injeta o token no localStorage antes de navegar
+    await page.goto(frontendUrl, { waitUntil: 'domcontentloaded' });
+    await page.evaluate((token) => {
+      localStorage.setItem('token', token);
+    }, token);
+    // Adiciona listeners para capturar logs e erros do console
+    page.on('console', msg => {
+      for (let i = 0; i < msg.args().length; ++i)
+        console.log(`PAGE LOG[${i}]:`, msg.args()[i]);
+      console.log('PAGE LOG:', msg.text());
+    });
+    page.on('pageerror', error => {
+      console.error('PAGE ERROR:', error);
+    });
+    await page.goto(printViewUrl, { waitUntil: 'networkidle0' });
+    // Aguarda um pouco para garantir renderização de fontes e gráficos
+    await new Promise(resolve => setTimeout(resolve, 800));
+    // Captura screenshot para depuração
+    await page.screenshot({ path: `puppeteer_printview_debug.png`, fullPage: true });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    await browser.close();
+
     reply.header('Content-Type', 'application/pdf');
-    reply.header('Content-Disposition', `attachment; filename="project-${id}.pdf"`);
-    doc.text(`Projeto: ${project.title}`);
-    doc.text(`Descrição: ${project.description || ''}`);
-    doc.text(`Estrutura:`);
-    doc.text(JSON.stringify(project.structure, null, 2));
-    doc.end();
-    return reply.send(doc);
+    reply.header('Content-Disposition', `attachment; filename=\"project-${id}.pdf\"`);
+    return reply.send(pdfBuffer);
   }
 
   async addMember(request: FastifyRequest, reply: FastifyReply) {

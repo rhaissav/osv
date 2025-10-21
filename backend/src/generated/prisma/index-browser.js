@@ -125,14 +125,17 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password_hash: 'password_hash',
-  role: 'role'
+  role: 'role',
+  passwordRecoveryToken: 'passwordRecoveryToken',
+  passwordRecoveryTokenExpires: 'passwordRecoveryTokenExpires'
 };
 
 exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
-  created_at: 'created_at',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   structure: 'structure',
   status: 'status'
 };
@@ -157,15 +160,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',

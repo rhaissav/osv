@@ -62,6 +62,7 @@ interface ProjectModel {
     status: 'development' | 'concluded';
     modules: ModuleModel[];
     relations: RelationModel[];
+    updatedAt?: string;
 }
 
 type RelationTypeKey = 'inheritance' | 'association' | 'aggregation';
@@ -118,6 +119,9 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
         onUpdate(newProject);
     };
 
+    // Formata a data de updatedAt se existir
+    const updatedAt = project.updatedAt ? new Date(project.updatedAt) : null;
+
     return (
         <div className="space-y-10">
             <div className="relative rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6">
@@ -140,7 +144,9 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                     {/* Segunda linha: nome do projeto e última atualização */}
                     <div className="flex flex-row items-center justify-between gap-4">
                         <p className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">{project.name}</p>
-                        <span className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">Última atualização: {new Date().toLocaleDateString()} {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">
+                            Última atualização: {updatedAt ? `${updatedAt.toLocaleDateString()} ${updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
+                        </span>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">

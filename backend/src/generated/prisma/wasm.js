@@ -97,14 +97,17 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password_hash: 'password_hash',
-  role: 'role'
+  role: 'role',
+  passwordRecoveryToken: 'passwordRecoveryToken',
+  passwordRecoveryTokenExpires: 'passwordRecoveryTokenExpires'
 };
 
 exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
-  created_at: 'created_at',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   structure: 'structure',
   status: 'status'
 };
@@ -129,15 +132,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
@@ -206,13 +209,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum ProjectUserRole {\n  OWNER\n  MEMBER\n}\n\nenum ProjectStatus {\n  EM_ANDAMENTO\n  CONCLUIDO\n}\n\nmodel User {\n  id            String           @id @default(uuid()) @map(\"UniqueID\")\n  name          String\n  email         String           @unique\n  password_hash String\n  role          Role\n  projects      UserOnProjects[]\n}\n\nmodel Project {\n  id          String           @id @default(uuid()) @map(\"UniqueID\")\n  title       String\n  description String?\n  created_at  DateTime         @default(now())\n  users       UserOnProjects[]\n  structure   Json\n  status      ProjectStatus    @default(EM_ANDAMENTO)\n}\n\nmodel UserOnProjects {\n  user       User            @relation(fields: [user_id], references: [id])\n  user_id    String\n  project    Project         @relation(fields: [project_id], references: [id])\n  project_id String\n  role       ProjectUserRole @default(MEMBER)\n\n  @@id([user_id, project_id])\n  @@map(\"UserProjects\")\n}\n",
-  "inlineSchemaHash": "fc022f0af8606dba6fa3ae093604892353ebfbcea19a4b34896e14efffd91d83",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum ProjectUserRole {\n  OWNER\n  MEMBER\n}\n\nenum ProjectStatus {\n  EM_ANDAMENTO\n  CONCLUIDO\n}\n\nmodel User {\n  id                           String           @id @default(uuid()) @map(\"UniqueID\")\n  name                         String\n  email                        String           @unique\n  password_hash                String\n  role                         Role\n  projects                     UserOnProjects[]\n  passwordRecoveryToken        String?          @unique\n  passwordRecoveryTokenExpires DateTime?\n}\n\nmodel Project {\n  id          String           @id @default(uuid()) @map(\"UniqueID\")\n  title       String\n  description String?\n  createdAt   DateTime         @default(now())\n  updatedAt   DateTime         @updatedAt\n  users       UserOnProjects[]\n  structure   Json\n  status      ProjectStatus    @default(EM_ANDAMENTO)\n}\n\nmodel UserOnProjects {\n  user       User            @relation(fields: [user_id], references: [id])\n  user_id    String\n  project    Project         @relation(fields: [project_id], references: [id])\n  project_id String\n  role       ProjectUserRole @default(MEMBER)\n\n  @@id([user_id, project_id])\n  @@map(\"UserProjects\")\n}\n",
+  "inlineSchemaHash": "12d46e322c510efeea421587ddb3a52286e47fb391a30d67fdc32ad5b8e53bdf",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"UniqueID\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password_hash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"UserOnProjects\",\"relationName\":\"UserToUserOnProjects\"}],\"dbName\":null},\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"UniqueID\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"created_at\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"UserOnProjects\",\"relationName\":\"ProjectToUserOnProjects\"},{\"name\":\"structure\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ProjectStatus\"}],\"dbName\":null},\"UserOnProjects\":{\"fields\":[{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserOnProjects\"},{\"name\":\"user_id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToUserOnProjects\"},{\"name\":\"project_id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"ProjectUserRole\"}],\"dbName\":\"UserProjects\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"UniqueID\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password_hash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"UserOnProjects\",\"relationName\":\"UserToUserOnProjects\"},{\"name\":\"passwordRecoveryToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"passwordRecoveryTokenExpires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"UniqueID\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"UserOnProjects\",\"relationName\":\"ProjectToUserOnProjects\"},{\"name\":\"structure\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ProjectStatus\"}],\"dbName\":null},\"UserOnProjects\":{\"fields\":[{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserOnProjects\"},{\"name\":\"user_id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToUserOnProjects\"},{\"name\":\"project_id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"ProjectUserRole\"}],\"dbName\":\"UserProjects\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

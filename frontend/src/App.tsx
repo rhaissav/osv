@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
 import PasswordRecovery from './pages/PasswordRecovery';
+import ResetPassword from './pages/ResetPassword';
 import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import ProjectCreate from './pages/ProjectCreate';
@@ -11,6 +12,7 @@ import Sidebar from './components/Sidebar';
 import React, { useState } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import './index.css';
+import ProjectPrintView from './pages/ProjectPrintView';
 
 
 function ProtectedLayout() {
@@ -34,6 +36,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route element={<PrivateRoute />}>
+          <Route path="/project/:id/print-view" element={<ProjectPrintView />} />
           <Route element={<ProtectedLayout />}>
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/new" element={<ProjectCreate />} />
@@ -42,6 +45,7 @@ function App() {
           </Route>
         </Route>
         <Route path="/password-recovery" element={<PasswordRecovery />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

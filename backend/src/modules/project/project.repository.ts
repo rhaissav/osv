@@ -14,7 +14,14 @@ export class ProjectRepository {
   async findById(id: string) {
     return prisma.project.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        structure: true,
+        createdAt: true,
+        updatedAt: true,
         users: true
       }
     });
@@ -25,7 +32,20 @@ export class ProjectRepository {
   }
 
   async update(id: string, data: any) {
-    return prisma.project.update({ where: { id }, data });
+    return prisma.project.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        structure: true,
+        createdAt: true,
+        updatedAt: true,
+        users: true
+      }
+    });
   }
 
   async delete(id: string) {

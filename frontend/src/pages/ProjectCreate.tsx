@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Modal from '../components/Modal';
 import ElementModalForm from '../components/ElementModalForm';
 import RelationModal from '../components/RelationModal';
@@ -54,6 +55,7 @@ interface ProjectStructure {
 
 interface ProjectModel extends ProjectStructure {
     status: 'development' | 'concluded';
+    updatedAt?: string;
 }
 
 
@@ -92,7 +94,7 @@ const OOSetModelingTool = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    // Estado para modal de colaborador
+    const [showToast, setShowToast] = useState(false);
     const [showAddCollaborator, setShowAddCollaborator] = useState(false);
     const [collabEmail, setCollabEmail] = useState('');
     const [collabError, setCollabError] = useState('');
@@ -117,6 +119,7 @@ const OOSetModelingTool = () => {
                         status,
                         modules: structure.modules || [],
                         relations: structure.relations || [],
+                        updatedAt: data.updatedAt,
                     });
                 })
                 .catch(() => setError('Erro ao carregar projeto'))
@@ -270,10 +273,15 @@ const OOSetModelingTool = () => {
                 const res = await createProject({ title, description, status: backendStatus, structure });
                 setProjectId(res.id);
                 setSuccess(true);
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 2500);
             } else {
                 // Atualização
-                await updateProject({ id: projectId, title, description, status: backendStatus, structure });
+                const res = await updateProject({ id: projectId, title, description, status: backendStatus, structure });
+                setProject(prev => ({ ...prev, updatedAt: res.updatedAt }));
                 setSuccess(true);
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 2500);
             }
         } catch {
             setError('Erro ao salvar projeto.');
@@ -466,6 +474,7 @@ const OOSetModelingTool = () => {
                                         window.URL.revokeObjectURL(url);
                                     } catch (err) {
                                         alert('Erro ao exportar PDF');
+                                        console.log(err)
                                     }
                                 }}
                             >
@@ -474,8 +483,12 @@ const OOSetModelingTool = () => {
                         </div>
                     </div>
                     {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-                    {success && (
-                        <div className="text-green-600 text-sm mt-2">Projeto salvo com sucesso!</div>
+                    {/* Toast de sucesso */}
+                    {showToast && createPortal(
+                        <div className="fixed top-6 right-6 z-50 bg-emerald-200 text-emerald-800 px-6 py-3 rounded-lg shadow-lg animate-fade-in-out font-semibold text-base border border-emerald-300">
+                            Projeto salvo com sucesso!
+                        </div>,
+                        document.body
                     )}
                     <SetTheoryView project={project} onUpdate={setProject} />
                 </div>
