@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../api/axios';
+import { login } from '../api/auth';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -15,12 +15,16 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('submit');
     setError('');
     try {
-      const response = await api.post('/login', { email, password });
-      localStorage.setItem('token', response.data.token);
+      console.log('antes do login', { email, password });
+      const data = await login(email, password);
+      console.log('depois do login', data);
+      localStorage.setItem('token', data.token);
       navigate('/projects');
     } catch (err: any) {
+      console.log('erro no login', err);
       setError(err.response?.data?.error || 'Erro ao fazer login');
     }
   };
@@ -64,7 +68,7 @@ export default function Login() {
                   Esqueceu sua senha?
                 </Link>
               </div>
-              <Button variant="primary">Entrar</Button>
+              <Button type="submit" variant="primary">Entrar</Button>
               <div className="mt-2 text-center text-sm text-gray-600">
                 Não tem uma conta?{' '}
                 <Link to="/register" className="text-blue-600 hover:underline font-medium">

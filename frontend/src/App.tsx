@@ -33,6 +33,7 @@ function App() {
           <Route element={<ProtectedLayout />}>
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/new" element={<ProjectCreate />} />
+            <Route path="/projects/:id/edit" element={<ProjectCreate />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>

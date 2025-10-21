@@ -1,8 +1,12 @@
+
 import { PrismaClient } from '../../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
 
 export class ProjectRepository {
+  async removeAllUsersFromProject(projectId: string) {
+    return prisma.userOnProjects.deleteMany({ where: { project_id: projectId } });
+  }
   async create(data: any) {
     return prisma.project.create({ data });
   }
@@ -79,7 +83,7 @@ export class ProjectRepository {
     });
   }
 
- async findUserByEmail(email: string) {
+  async findUserByEmail(email: string) {
     console.log('Finding user by email:', email);
     return prisma.user.findUnique({ where: { email } });
   }

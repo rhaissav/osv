@@ -1,7 +1,9 @@
 
 import { useEffect, useState } from 'react';
+import ConfirmModal from '../components/ConfirmModal';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { deleteProject } from '../api/project';
 import Button from '../components/Button';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
@@ -10,11 +12,31 @@ interface Project {
     name: string;
     description?: string;
     role?: 'OWNER' | 'MEMBER';
+    status?: string;
 }
 
 
 
 export default function Projects() {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+    const [deleteSuccess, setDeleteSuccess] = useState(false);
+    // Função para remover projeto
+        async function handleDeleteProject() {
+            if (!projectToDelete) return;
+            try {
+                await deleteProject(projectToDelete.id);
+                setMeusProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
+                setColaboradorProjetos(prev => prev.filter(p => p.id !== projectToDelete.id));
+                setDeleteSuccess(true);
+            } catch {
+                setError('Erro ao remover projeto.');
+            } finally {
+                setModalOpen(false);
+                setProjectToDelete(null);
+                setTimeout(() => setDeleteSuccess(false), 3000);
+            }
+        }
     const [meusProjetos, setMeusProjetos] = useState<Project[]>([]);
     const [colaboradorProjetos, setColaboradorProjetos] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
@@ -103,21 +125,36 @@ export default function Projects() {
                                             </td>
                                             <td className="px-4 py-2 text-gray-600">{project.description || 'Sem descrição'}</td>
                                             <td className="px-4 py-2">
-                                                {project.status === 'concluido' ? (
+                                                {project.status === 'CONCLUIDO' ? (
                                                     <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">Concluído</span>
-                                                ) : project.status === 'arquivado' ? (
-                                                    <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">Arquivado</span>
+                                                ) : project.status === 'EM_ANDAMENTO' ? (
+                                                    <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">Em andamento</span>
                                                 ) : (
-                                                    <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">Ativo</span>
+                                                    <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">-</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-2 flex gap-2">
-                                                <button className="p-2 rounded hover:bg-blue-100 text-blue-600" title="Editar">
+                                                <Link to={`/projects/${project.id}/edit`} className="p-2 rounded text-blue-600" title="Editar">
                                                     <FaEdit />
-                                                </button>
-                                                <button className="p-2 rounded hover:bg-orange-100 text-orange-600" title="Remover">
+                                                </Link>
+                                                <button
+                                                    className="p-2 rounded text-orange-600"
+                                                    title="Remover"
+                                                    onClick={() => { setProjectToDelete(project); setModalOpen(true); }}
+                                                >
                                                     <FaTrash />
                                                 </button>
+                                                <ConfirmModal
+                                                    open={modalOpen}
+                                                    onConfirm={handleDeleteProject}
+                                                    onCancel={() => { setModalOpen(false); setProjectToDelete(null); }}
+                                                    projectName={projectToDelete?.name || ''}
+                                                />
+                                                {deleteSuccess && (
+                                                    <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50">
+                                                        Projeto removido com sucesso!
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

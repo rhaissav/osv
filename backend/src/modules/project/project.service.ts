@@ -12,6 +12,7 @@ export class ProjectService {
   }
 
   async create(data: CreateProjectDTO, owner_id: string) {
+    console.log('Creating project with data:', data, 'and owner_id:', owner_id);
     const projectId = uuidv7();
     const project = await this.repository.create({
       id: projectId,
@@ -37,7 +38,18 @@ export class ProjectService {
   }
 
   async delete(id: string) {
-    return this.repository.delete(id);
+    console.log('Dentro do service, deletando projeto com id:', id);
+      // Remove todos os vínculos de usuários antes de deletar o projeto
+      if (this.repository.removeAllUsersFromProject) {
+        await this.repository.removeAllUsersFromProject(id);
+      } else {
+        // fallback manual se não existir método
+        const repo: any = this.repository;
+        if (repo.prisma && repo.prisma.userOnProjects) {
+          await repo.prisma.userOnProjects.deleteMany({ where: { project_id: id } });
+        }
+      }
+      return this.repository.delete(id);
   }
 
   async getProjectsForUserWithRole(userId: string) {

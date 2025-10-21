@@ -25,6 +25,11 @@ async function refreshToken() {
 
 // Interceptor para adicionar o token JWT e fazer refresh se necessário
 api.interceptors.request.use(async (config) => {
+    console.log('axios interceptor: request', config);
+    // Não tenta refresh em /login ou /refresh-token
+    if (config.url && (config.url.includes('/login') || config.url.includes('/refresh-token'))) {
+        return config;
+    }
     let token = localStorage.getItem('token');
     if (token) {
         // Checa expiração do token

@@ -1,249 +1,376 @@
-import React, { useState } from 'react';
-import Button from '../components/Button';
-import Select from '../components/Select';
-import ClassForm from '../components/ClassForm';
-import RelationForm from '../components/RelationForm';
-import api from '../api/axios';
+import React, { useState, useEffect } from 'react';
+import Modal from '../components/Modal';
+import ElementModalForm from '../components/ElementModalForm';
+import RelationModal from '../components/RelationModal';
+import SetTheoryView from '../components/SetTheoryView';
+import { useParams } from 'react-router-dom';
+import { createProject, updateProject, getProject } from '../api/project';
+import {
+    Plus,
+    Trash2,
+    ChevronDown,
+    ChevronRight,
+    Search,
+    Edit2,
+    Package as PackageIcon,
+    Folder as FolderIcon,
+    Box as BoxIcon,
+    Triangle,
+    Diamond,
+} from 'lucide-react';
 
-// Tipos OO
-interface ProjetoOO {
-    modules: Modulo[];
-}
-interface Modulo {
+
+// Estruturas do Modelo de Projeto (Mantidas em string[] para o método final)
+interface ClassModel {
+    id: string;
     name: string;
-    packages: Pacote[];
-}
-interface Pacote {
-    name: string;
-    classes: Classe[];
-    interfaces: InterfaceOO[];
-}
-interface Classe {
-    name: string;
-    type: 'concreta' | 'abstrata';
+    type: 'concrete' | 'abstract' | 'interface';
     attributes: string[];
-    methods: string[];
-    extends?: string;
-    implements?: string[];
-    associations?: string[];
-    aggregations?: string[];
+    methods: string[]; // Final format: 'name(p1:T1, p2:T2):R'
 }
-interface InterfaceOO {
+interface PackageModel {
+    id: string;
     name: string;
-    methods: string[];
+    classes: ClassModel[];
+}
+interface ModuleModel {
+    id: string;
+    name: string;
+    packages: PackageModel[];
+}
+interface RelationModel {
+    id: string;
+    type: 'inheritance' | 'association' | 'aggregation';
+    from: string;
+    to: string;
+    label: string;
+}
+interface ProjectStructure {
+    name: string;
+    modules: ModuleModel[];
+    relations: RelationModel[];
 }
 
-const initialStructure: ProjetoOO = { modules: [] };
+interface ProjectModel extends ProjectStructure {
+    status: 'development' | 'concluded';
+}
 
-export default function ProjectCreate() {
-    // Project info
+
+// --- Componente Principal --//
+const OOSetModelingTool = () => {
+    const { id } = useParams();
+    const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
+    const [expandedPackages, setExpandedPackages] = useState<Record<string, boolean>>({});
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showRelationModal, setShowRelationModal] = useState(false);
+    const [modalMode, setModalMode] = useState<{
+        type: 'module' | 'package' | 'class';
+        parentId: string | null;
+        parentName: string;
+        editMode: boolean;
+        editId: string | null;
+    }>({
+        type: 'module',
+        parentId: null,
+        parentName: '',
+        editMode: false,
+        editId: null
+    });
+
+    // Novos estados para integração
+    const [project, setProject] = useState<ProjectModel>({
+        name: '',
+        status: 'development',
+        modules: [],
+        relations: [],
+    });
+    const [projectId, setProjectId] = useState<string | null>(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [status, setStatus] = useState<'EM_ANDAMENTO' | 'CONCLUIDO'>('EM_ANDAMENTO');
-    const [structure, setStructure] = useState<ProjetoOO>(initialStructure);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [saved, setSaved] = useState(false);
+    const [success, setSuccess] = useState(false);
 
-    // Removido controle de step: todos os passos aparecem juntos
-
-    // Form states
-    const [modName, setModName] = useState('');
-    const [pkgName, setPkgName] = useState('');
-
-    // Helpers para selects
-    const allModules = structure.modules;
-    const allPkgs = allModules.flatMap(m => m.packages);
-    const allClasses = allPkgs.flatMap(p => p.classes);
-
-    // Adicionar módulo
-    function addModule() {
-        if (!modName.trim()) { setError('Nome do módulo obrigatório'); return; }
-        if (allModules.some(m => m.name === modName.trim())) { setError('Módulo já existe'); return; }
-        setStructure(s => ({ ...s, modules: [...s.modules, { name: modName.trim(), packages: [] }] }));
-        setModName(''); setError('');
-    }
-    // Adicionar pacote
-    function addPackage() {
-        if (!pkgName.trim()) { setError('Nome do pacote obrigatório'); return; }
-        if (allModules.length === 0) { setError('Crie um módulo antes'); return; }
-        // Permite escolher o módulo para o pacote
-        const mod = allModules.find(m => m.name === selectedModuleForPackage);
-        if (!mod) { setError('Selecione o módulo para o pacote'); return; }
-        if (mod.packages.some(p => p.name === pkgName.trim())) { setError('Pacote já existe'); return; }
-        mod.packages.push({ name: pkgName.trim(), classes: [], interfaces: [] });
-        setStructure(s => ({ ...s }));
-        setPkgName(''); setSelectedModuleForPackage(''); setError('');
-    }
-    // Adicionar classe ou interface (via ClassForm)
-    function handleAddClass({ name, type, attributes, methods, pkg }: { name: string; type: 'concreta' | 'abstrata' | 'interface'; attributes: string[]; methods: string[]; pkg: string }) {
-        const pacote = allPkgs.find(p => p.name === pkg);
-        if (!pacote) { setError('Pacote não encontrado'); return; }
-        if (type === 'interface') {
-            if (pacote.interfaces.some(i => i.name === name)) { setError('Interface já existe'); return; }
-            pacote.interfaces.push({ name, methods });
-        } else {
-            if (pacote.classes.some(c => c.name === name)) { setError('Classe já existe'); return; }
-            pacote.classes.push({ name, type, attributes, methods });
+    // Carregar dados do projeto se estiver em modo edição
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            getProject(id)
+                .then((data) => {
+                    setProjectId(data.id);
+                    setTitle(data.title || data.name || '');
+                    setDescription(data.description || '');
+                    let status: 'development' | 'concluded' = 'development';
+                    if (data.status === 'CONCLUIDO') status = 'concluded';
+                    if (data.status === 'EM_ANDAMENTO') status = 'development';
+                    const structure = data.structure || data;
+                    setProject({
+                        name: structure.name || data.title || '',
+                        status,
+                        modules: structure.modules || [],
+                        relations: structure.relations || [],
+                    });
+                })
+                .catch(() => setError('Erro ao carregar projeto'))
+                .finally(() => setLoading(false));
         }
-        setStructure(s => ({ ...s }));
-        setError('');
-    }
-    // Adicionar relacionamento (via RelationForm)
-    function handleAddRelation({ type, origin, dest }: { type: string; origin: string; dest: string }) {
-        const origem = allClasses.find(c => c.name === origin);
-        if (!origem) { setError('Classe de origem não encontrada'); return; }
-        if (type === 'heranca') origem.extends = dest;
-        else if (type === 'implementacao') origem.implements = [...(origem.implements || []), dest];
-        else if (type === 'associacao') origem.associations = [...(origem.associations || []), dest];
-        else if (type === 'agregacao') origem.aggregations = [...(origem.aggregations || []), dest];
-        setStructure(s => ({ ...s }));
-        setError('');
-    }
+    }, [id]);
 
-    // Salvar projeto (POST/PUT)
-    async function handleSave(e: React.FormEvent) {
-        e.preventDefault();
+
+    const allClasses = project.modules.flatMap(mod => mod.packages.flatMap(pkg => pkg.classes.map(cls => ({ id: cls.id, label: `${mod.name}/${pkg.name}/${cls.name}`, name: cls.name }))));
+
+    const toggleModule = (moduleId: string) => {
+        setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
+    };
+    const togglePackage = (packageId: string) => {
+        setExpandedPackages(prev => ({ ...prev, [packageId]: !prev[packageId] }));
+    };
+    const openModal = (type: 'module' | 'package' | 'class', parentId: string | null = null, parentName: string = '', editMode = false, editId: string | null = null) => {
+        setModalMode({ type, parentId, parentName, editMode, editId });
+        setShowModal(true);
+    };
+    const closeModal = () => setShowModal(false);
+
+    const deleteElement = (type: 'module' | 'package' | 'class', id: string) => {
+        if (!window.confirm(`Tem certeza que deseja remover este ${type}? Isso pode afetar relações.`)) return;
+        const newProject = structuredClone(project) as ProjectModel;
+        if (type === 'module') {
+            newProject.modules = newProject.modules.filter(m => m.id !== id);
+        } else if (type === 'package') {
+            newProject.modules.forEach(mod => {
+                mod.packages = mod.packages.filter(p => p.id !== id);
+            });
+        } else if (type === 'class') {
+            newProject.modules.forEach(mod => {
+                mod.packages.forEach(pkg => {
+                    pkg.classes = pkg.classes.filter(c => c.id !== id);
+                });
+            });
+            newProject.relations = newProject.relations.filter(r => r.from !== id && r.to !== id);
+        }
+        setProject(newProject);
+    };
+
+    const filteredModules = project.modules.filter(mod => {
+        if (!searchTerm.trim()) return true;
+        const low = searchTerm.toLowerCase();
+        if (mod.name.toLowerCase().includes(low)) return true;
+        return mod.packages.some(pkg => {
+            if (pkg.name.toLowerCase().includes(low)) return true;
+            return pkg.classes.some(c => c.name.toLowerCase().includes(low));
+        });
+    });
+
+    // Função para obter o ícone de tipo de elemento na árvore
+    const getIconForTree = (type: 'module' | 'package' | 'class', classType?: 'concrete' | 'abstract' | 'interface') => {
+        if (type === 'module') return <PackageIcon size={16} className="text-blue-600 dark:text-blue-400" />;
+        if (type === 'package') return <FolderIcon size={16} className="text-purple-600 dark:text-purple-400" />;
+        if (type === 'class') {
+            // Pequena constante local para ícones de classe
+            const classTypeIcons: Record<string, { icon: React.ElementType; color: string }> = {
+                concrete: { icon: BoxIcon, color: 'emerald' },
+                abstract: { icon: Triangle, color: 'orange' },
+                interface: { icon: Diamond, color: 'cyan' },
+            };
+            const config = classType ? classTypeIcons[classType] : undefined;
+            if (config) {
+                const Icon = config.icon;
+                return <Icon size={14} className={`text-${config.color}-600 dark:text-${config.color}-400`} />;
+            }
+            return <BoxIcon size={14} className="text-neutral-500 dark:text-neutral-400" />;
+        }
+        return null;
+    };
+
+    const renderTree = () => (
+        <div className="space-y-2 text-sm">
+            {filteredModules.map(mod => (
+                <div key={mod.id} className="space-y-1">
+                    <div className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
+                        <div onClick={() => toggleModule(mod.id)} className="flex-1 flex items-center gap-2 cursor-pointer">
+                            {expandedModules[mod.id] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                            {getIconForTree('module')} {/* Ícone de Módulo */}
+                            <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{mod.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
+                            <button onClick={() => openModal('package', mod.id, mod.name)} className="p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition text-xs font-medium" title="Adicionar Pacote"><Plus size={16} /></button>
+                            <button onClick={() => openModal('module', null, '', true, mod.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Módulo"><Edit2 size={16} /></button>
+                            <button onClick={() => deleteElement('module', mod.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Módulo"><Trash2 size={16} /></button>
+                        </div>
+                    </div>
+                    {expandedModules[mod.id] && (
+                        <div className="ml-5 border-l border-neutral-200 dark:border-neutral-700 pl-3 space-y-1">
+                            {mod.packages.map(pkg => (
+                                <div key={pkg.id} className="space-y-1">
+                                    <div className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
+                                        <div onClick={() => togglePackage(pkg.id)} className="flex-1 flex items-center gap-2 cursor-pointer">
+                                            {expandedPackages[pkg.id] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                                            {getIconForTree('package')} {/* Ícone de Pacote */}
+                                            <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{pkg.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
+                                            <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`)} className="p-1.5 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/20 rounded-full transition text-xs font-medium" title="Adicionar Classe"><Plus size={16} /></button>
+                                            <button onClick={() => openModal('package', mod.id, mod.name, true, pkg.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Pacote"><Edit2 size={16} /></button>
+                                            <button onClick={() => deleteElement('package', pkg.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Pacote"><Trash2 size={16} /></button>
+                                        </div>
+                                    </div>
+                                    {expandedPackages[pkg.id] && (
+                                        <div className="ml-5 border-l border-neutral-200 dark:border-neutral-700 pl-3 space-y-1">
+                                            {pkg.classes.map(cls => (
+                                                <div key={cls.id} className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
+                                                    <div className="flex-1 flex items-center gap-2">
+                                                        {getIconForTree('class', cls.type)} {/* Ícone de Classe */}
+                                                        <span className={`text-sm text-neutral-700 dark:text-neutral-200 font-mono`}>{cls.name}</span>
+                                                        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium ml-2">({cls.type.substring(0, 3)})</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
+                                                        <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`, true, cls.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Classe"><Edit2 size={16} /></button>
+                                                        <button onClick={() => deleteElement('class', cls.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Classe"><Trash2 size={16} /></button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+
+
+    // Função para salvar ou atualizar projeto
+    const handleSaveProject = async () => {
         setLoading(true);
         setError('');
         try {
-            if (!saved) {
-                await api.post('/projects', { title, description, status, structure });
-            } else {
-                await api.put('/projects/current', { title, description, status, structure });
+            if (!title.trim() || !description.trim()) {
+                setError('Preencha título e descrição.');
+                setLoading(false);
+                return;
             }
-            setShowModal(true);
-            setSaved(true);
+            const backendStatus = project.status === 'development' ? 'EM_ANDAMENTO' : 'CONCLUIDO';
+            const structure: ProjectStructure = {
+                name: project.name,
+                modules: project.modules,
+                relations: project.relations
+            };
+            if (!projectId) {
+                // Criação
+                const res = await createProject({ title, description, status: backendStatus, structure });
+                setProjectId(res.id);
+                setSuccess(true);
+            } else {
+                // Atualização
+                await updateProject({ id: projectId, title, description, status: backendStatus, structure });
+                setSuccess(true);
+            }
         } catch {
             setError('Erro ao salvar projeto.');
         } finally {
             setLoading(false);
         }
-    }
-
-    // Preview visual OO
-    function OOSetPreview({ structure }: { structure: ProjetoOO }) {
-        return (
-            <div className="space-y-4">
-                {structure.modules.map((mod, mi) => (
-                    <div key={mi} className="bg-white border rounded shadow p-4">
-                        <div className="font-bold mb-1">Módulo {mod.name}</div>
-                        <div className="bg-gray-50 rounded p-2 text-xs mb-2">{mod.name} = {'{ '}{mod.packages.map(p => p.name).join(', ')}{' }'}</div>
-                        {mod.packages.map((pkg, pi) => (
-                            <div key={pi} className="ml-2 mb-2">
-                                <div className="font-semibold">Pacote {pkg.name}</div>
-                                <div className="bg-gray-50 rounded p-2 text-xs mb-1">{pkg.name} = {'{ '}{[...pkg.classes.map(c => c.name), ...pkg.interfaces.map(i => i.name)].join(', ')}{' }'}</div>
-                                {pkg.classes.map((cls, ci) => (
-                                    <div key={ci} className="ml-2 mb-1">
-                                        <div className="font-medium">Classe {cls.name} {cls.type === 'abstrata' && <span className="italic">(abstrata)</span>}</div>
-                                        <div className="bg-gray-100 rounded p-2 text-xs">
-                                            {cls.name} = {'{ '}
-                                            {cls.extends && <><span className="text-blue-700">herda</span>: {cls.extends}<br /></>}
-                                            {cls.implements && cls.implements.length > 0 && <><span className="text-blue-700">implementa</span>: {cls.implements.join(', ')}<br /></>}
-                                            {cls.associations && cls.associations.length > 0 && <><span className="text-blue-700">associações</span>: {cls.associations.join(', ')}<br /></>}
-                                            {cls.aggregations && cls.aggregations.length > 0 && <><span className="text-blue-700">agregações</span>: {cls.aggregations.join(', ')}<br /></>}
-                                            {cls.attributes.length > 0 && (<><span className="text-gray-700">D</span> = {'{ '}{cls.attributes.join(', ')}{' }'}<br /></>)}
-                                            {cls.methods.length > 0 && (<><span className="text-gray-700">F</span> = {'{ '}{cls.methods.join(', ')}{' }'}<br /></>)}
-                                            {'}'}
-                                        </div>
-                                    </div>
-                                ))}
-                                {pkg.interfaces.map((iface, ii) => (
-                                    <div key={ii} className="ml-2 mb-1">
-                                        <div className="font-medium">Interface {iface.name}</div>
-                                        <div className="bg-gray-100 rounded p-2 text-xs">
-                                            {iface.name} = {'{ '}
-                                            {iface.methods.length > 0 && (<><span className="text-gray-700">F</span> = {'{ '}{iface.methods.join(', ')}{' }'}<br /></>)}
-                                            {'}'}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    // Estados para selects de módulo/pacote
-    const [selectedModuleForPackage, setSelectedModuleForPackage] = useState('');
-
-    // Todos os passos exibidos juntos usando o componente Select
-    function renderAllSteps() {
-        return (
-            <>
-                {/* Passo 1: Módulo */}
-                <div className="border rounded p-4 mb-4">
-                    <div className="font-semibold mb-2">Passo 1: Módulo</div>
-                    <input className="border rounded px-2 py-1 w-full mb-2" placeholder="Nome do módulo" value={modName} onChange={e => setModName(e.target.value)} />
-                    <Button onClick={addModule} className="w-full">Adicionar módulo</Button>
-                </div>
-                {/* Passo 2: Pacote */}
-                <div className="border rounded p-4 mb-4">
-                    <div className="font-semibold mb-2">Passo 2: Pacote</div>
-                    <Select
-                        label={undefined}
-                        value={selectedModuleForPackage}
-                        onChange={e => setSelectedModuleForPackage(e.target.value)}
-                        options={[{ value: '', label: 'Selecione o módulo' }, ...allModules.map((m) => ({ value: m.name, label: m.name }))]}
-                    />
-                    <input className="border rounded px-2 py-1 w-full mb-2" placeholder="Nome do pacote" value={pkgName} onChange={e => setPkgName(e.target.value)} />
-                    <Button onClick={addPackage} className="w-full">Adicionar pacote</Button>
-                </div>
-                {/* Passo 3: Classe/Interface */}
-                <ClassForm allPkgs={allPkgs} onAdd={handleAddClass} />
-                {/* Passo 4: Relacionamentos */}
-                <RelationForm allClasses={allClasses} onAdd={handleAddRelation} />
-            </>
-        );
-    }
+    };
 
     return (
-        <div className="max-w-6xl mx-auto py-10">
-            <form onSubmit={handleSave} className="bg-white rounded-xl shadow p-6 flex flex-col gap-4">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Novo Projeto</h2>
-                    <Button type="submit" variant="primary" className="w-auto px-6" disabled={loading}>Salvar Projeto</Button>
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex font-sans antialiased">
+            {/* Painel Esquerdo */}
+            <aside className="w-full lg:w-96 bg-white dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 flex flex-col">
+                <div className="p-5 border-b border-neutral-200 dark:border-neutral-700">
+                    <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Modelagem OO</h1>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">{title || 'Novo Projeto'}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Esquerda: Wizard */}
-                    <div>
-                        <div className="mb-4">
-                            <label className="block font-medium mb-1">Título</label>
-                            <input className="border rounded px-3 py-2 w-full" value={title} onChange={e => setTitle(e.target.value)} required />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block font-medium mb-1">Status</label>
-                            <select className="border rounded px-3 py-2 w-full" value={status} onChange={e => setStatus(e.target.value as 'EM_ANDAMENTO' | 'CONCLUIDO')}>
-                                <option value="EM_ANDAMENTO">Em andamento</option>
-                                <option value="CONCLUIDO">Concluído</option>
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block font-medium mb-1">Descrição</label>
-                            <textarea className="border rounded px-3 py-2 w-full" value={description} onChange={e => setDescription(e.target.value)} />
-                        </div>
-                        {renderAllSteps()}
-                        {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
+
+                <div className="p-4 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 space-y-3">
+                    <div className="mb-2">
+                        <label className="block text-sm font-medium mb-1">Título do Projeto</label>
+                        <input
+                            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            placeholder="Digite o título do projeto"
+                        />
                     </div>
-                    {/* Direita: Preview OO */}
-                    <div>
-                        <h3 className="font-semibold mb-2">Visualização da Estrutura OO</h3>
-                        <OOSetPreview structure={structure} />
+                    <div className="mb-2">
+                        <label className="block text-sm font-medium mb-1">Descrição</label>
+                        <textarea
+                            className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100"
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            placeholder="Digite a descrição do projeto"
+                        />
+                    </div>
+                    <div className="relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
+                        <input
+                            type="text"
+                            placeholder="Buscar Módulos, Pacotes ou Classes..."
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition"
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <button onClick={() => openModal('module')} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                            <Plus size={16} />
+                            Novo Módulo
+                        </button>
+                        <button onClick={() => setShowRelationModal(true)} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-sm">
+                            Relações
+                        </button>
                     </div>
                 </div>
-            </form>
-            {/* Modal de sucesso */}
+
+                <div className="flex-1 overflow-y-auto p-4 text-sm">
+                    {filteredModules.length > 0 ? renderTree() : (
+                        <div className="text-center py-10 text-neutral-500 dark:text-neutral-400">
+                            <p>Nenhum elemento encontrado.</p>
+                        </div>
+                    )}
+                </div>
+            </aside>
+
+            {/* Painel Direito */}
+            <main className="flex-1 overflow-y-auto p-8 lg:p-12">
+                <div className="max-w-6xl mx-auto space-y-10">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Visualização (Teoria dos Conjuntos)</h2>
+                        <div className="flex gap-2">
+                            <button
+                                className="px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-sm"
+                                onClick={handleSaveProject}
+                                disabled={loading}
+                            >
+                                Salvar Projeto
+                            </button>
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm">
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+                    {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+                    {success && (
+                        <div className="text-green-600 text-sm mt-2">Projeto salvo com sucesso!</div>
+                    )}
+                    <SetTheoryView project={project} onUpdate={setProject} />
+                </div>
+            </main>
+
             {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full flex flex-col items-center">
-                        <div className="text-green-600 text-2xl mb-2">Projeto salvo!</div>
-                        <Button onClick={() => setShowModal(false)} className="mt-4 w-full">OK</Button>
-                    </div>
-                </div>
+                <Modal onClose={closeModal}>
+                    <ElementModalForm initialProject={project} modalMode={modalMode} onClose={closeModal} onUpdate={setProject} />
+                </Modal>
+            )}
+            {showRelationModal && (
+                <RelationModal project={project} allClasses={allClasses} onClose={() => setShowRelationModal(false)} onUpdate={setProject} />
             )}
         </div>
     );
-}
+};
+
+export default OOSetModelingTool;
+
+
