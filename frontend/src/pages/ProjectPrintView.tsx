@@ -23,9 +23,7 @@ const ProjectPrintView = () => {
     // Adapta o objeto para o formato esperado pelo SetTheoryView
     const projectForSetTheory: any = {
         ...project,
-        // Garante que status seja 'development' | 'concluded'
         status: project.status === 'CONCLUIDO' ? 'concluded' : 'development',
-        // Garante que modules e relations estejam presentes
         modules: project.structure?.modules || [],
         relations: project.structure?.relations || [],
         name: project.title || project.name || '',
@@ -34,6 +32,9 @@ const ProjectPrintView = () => {
     return (
         <div className="bg-neutral-100 min-h-screen py-8 print:py-0">
             <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-8 print:shadow-none print:rounded-none print:p-0">
+                <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mt-12 mb-8 text-center print:mt-8 print:mb-6 print:text-center">
+                    Visualização (Teoria dos Conjuntos)
+                </h2>
                 <SetTheoryView project={projectForSetTheory} onUpdate={() => { }} />
             </div>
         </div>

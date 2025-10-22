@@ -8,6 +8,23 @@ const repository = new ProjectRepository();
 const service = new ProjectService(repository);
 
 export class ProjectController {
+
+  async getMembers(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as any;
+    // @ts-ignore
+    const userId = request.user.sub;
+    const role = await service.getUserRole(id, userId);
+    if (!role) return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
+    const members = await service.getProjectMembers(id);
+    // Retorna apenas id, email, nome e role de cada membro
+    const formatted = members.map((m: any) => ({
+      id: m.user.id,
+      email: m.user.email,
+      name: m.user.name,
+      role: m.role
+    }));
+    return reply.send(formatted);
+  }
   async create(request: FastifyRequest, reply: FastifyReply) {
     const data = request.body as CreateProjectDTO;
     // @ts-ignore
@@ -24,7 +41,7 @@ export class ProjectController {
     if (!role) return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
     const project = await service.findById(id);
     if (!project) return reply.code(404).send({ error: 'Projeto não encontrado' });
-    return reply.send(project);
+    return reply.send({ ...project, role });
   }
 
   async getAll(request: FastifyRequest, reply: FastifyReply) {
@@ -39,8 +56,9 @@ export class ProjectController {
     // @ts-ignore
     const userId = request.user.sub;
     const role = await service.getUserRole(id, userId);
-    if (role !== 'OWNER') {
-      return reply.code(403).send({ error: 'Acesso negado: apenas o proprietário pode editar o projeto.' });
+    console.log('role', role)
+    if (!role) {
+      return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
     }
     const updated = await service.update(id, request.body as UpdateProjectDTO);
     return reply.send(updated);
@@ -67,21 +85,19 @@ export class ProjectController {
     if (!role) {
       return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
     }
-    // Recupera o token JWT do header Authorization
+
     const authHeader = request.headers['authorization'] || '';
     const token = authHeader.replace('Bearer ', '');
-    // URL do frontend para visualização de impressão
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const printViewUrl = `${frontendUrl}/project/${id}/print-view`;
 
     const browser = await puppeteer.default.launch({ headless: true });
     const page = await browser.newPage();
-    // Injeta o token no localStorage antes de navegar
     await page.goto(frontendUrl, { waitUntil: 'domcontentloaded' });
     await page.evaluate((token) => {
       localStorage.setItem('token', token);
     }, token);
-    // Adiciona listeners para capturar logs e erros do console
+
     page.on('console', msg => {
       for (let i = 0; i < msg.args().length; ++i)
         console.log(`PAGE LOG[${i}]:`, msg.args()[i]);
@@ -90,11 +106,9 @@ export class ProjectController {
     page.on('pageerror', error => {
       console.error('PAGE ERROR:', error);
     });
+
     await page.goto(printViewUrl, { waitUntil: 'networkidle0' });
-    // Aguarda um pouco para garantir renderização de fontes e gráficos
     await new Promise(resolve => setTimeout(resolve, 800));
-    // Captura screenshot para depuração
-    await page.screenshot({ path: `puppeteer_printview_debug.png`, fullPage: true });
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
 

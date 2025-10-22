@@ -1,5 +1,3 @@
-
-
 import { PrismaClient } from '../../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
@@ -10,7 +8,6 @@ export class UserRepository {
   }
 
   async updatePassword(id: string, newPassword: string) {
-    // Aqui você pode aplicar hash se necessário
     return prisma.user.update({ where: { id }, data: { password_hash: newPassword } });
   }
 

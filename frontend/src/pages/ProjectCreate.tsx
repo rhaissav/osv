@@ -1,3 +1,5 @@
+// Estado e handlers para modal de confirmação de remoção de entidade
+// (deve estar dentro do componente principal)
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Modal from '../components/Modal';
@@ -13,13 +15,13 @@ import {
     ChevronDown,
     ChevronRight,
     Search,
-    Edit2,
     Package as PackageIcon,
     Folder as FolderIcon,
     Box as BoxIcon,
     Triangle,
     Diamond,
 } from 'lucide-react';
+import EntityConfirmModal from '../components/EntityConfirmModal';
 
 
 // Estruturas do Modelo de Projeto (Mantidas em string[] para o método final)
@@ -53,6 +55,8 @@ interface ProjectStructure {
     relations: RelationModel[];
 }
 
+
+type UserRole = 'OWNER' | 'MEMBER';
 interface ProjectModel extends ProjectStructure {
     status: 'development' | 'concluded';
     updatedAt?: string;
@@ -61,6 +65,47 @@ interface ProjectModel extends ProjectStructure {
 
 // --- Componente Principal --//
 const OOSetModelingTool = () => {
+    const [entityModal, setEntityModal] = useState<{
+        open: boolean;
+        type: 'module' | 'package' | 'class';
+        entityId: string | null;
+        entityName: string;
+    }>({
+        open: false,
+        type: 'module',
+        entityId: null,
+        entityName: ''
+    });
+
+    const handleEntityDelete = (type: 'module' | 'package' | 'class', entityId: string, entityName: string) => {
+        setEntityModal({ open: true, type, entityId, entityName });
+    };
+
+    const closeEntityModal = () => {
+        setEntityModal({ open: false, type: 'module', entityId: null, entityName: '' });
+    };
+
+    const confirmEntityDelete = () => {
+        if (!entityModal.entityId) return;
+        const { type, entityId } = entityModal;
+        const newProject = structuredClone(project) as ProjectModel;
+        if (type === 'module') {
+            newProject.modules = newProject.modules.filter(m => m.id !== entityId);
+        } else if (type === 'package') {
+            newProject.modules.forEach(mod => {
+                mod.packages = mod.packages.filter(p => p.id !== entityId);
+            });
+        } else if (type === 'class') {
+            newProject.modules.forEach(mod => {
+                mod.packages.forEach(pkg => {
+                    pkg.classes = pkg.classes.filter(c => c.id !== entityId);
+                });
+            });
+            newProject.relations = newProject.relations.filter(r => r.from !== entityId && r.to !== entityId);
+        }
+        setProject(newProject);
+        closeEntityModal();
+    };
     const { id } = useParams();
     const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
     const [expandedPackages, setExpandedPackages] = useState<Record<string, boolean>>({});
@@ -88,18 +133,19 @@ const OOSetModelingTool = () => {
         modules: [],
         relations: [],
     });
+    const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
     const [projectId, setProjectId] = useState<string | null>(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [showAddCollaborator, setShowAddCollaborator] = useState(false);
     const [collabEmail, setCollabEmail] = useState('');
     const [collabError, setCollabError] = useState('');
     const [collabSuccess, setCollabSuccess] = useState('');
     const [collabLoading, setCollabLoading] = useState(false);
+
 
     // Carregar dados do projeto se estiver em modo edição
     useEffect(() => {
@@ -121,6 +167,7 @@ const OOSetModelingTool = () => {
                         relations: structure.relations || [],
                         updatedAt: data.updatedAt,
                     });
+                    setUserRole(data.role as UserRole || undefined);
                 })
                 .catch(() => setError('Erro ao carregar projeto'))
                 .finally(() => setLoading(false));
@@ -142,25 +189,6 @@ const OOSetModelingTool = () => {
     };
     const closeModal = () => setShowModal(false);
 
-    const deleteElement = (type: 'module' | 'package' | 'class', id: string) => {
-        if (!window.confirm(`Tem certeza que deseja remover este ${type}? Isso pode afetar relações.`)) return;
-        const newProject = structuredClone(project) as ProjectModel;
-        if (type === 'module') {
-            newProject.modules = newProject.modules.filter(m => m.id !== id);
-        } else if (type === 'package') {
-            newProject.modules.forEach(mod => {
-                mod.packages = mod.packages.filter(p => p.id !== id);
-            });
-        } else if (type === 'class') {
-            newProject.modules.forEach(mod => {
-                mod.packages.forEach(pkg => {
-                    pkg.classes = pkg.classes.filter(c => c.id !== id);
-                });
-            });
-            newProject.relations = newProject.relations.filter(r => r.from !== id && r.to !== id);
-        }
-        setProject(newProject);
-    };
 
     const filteredModules = project.modules.filter(mod => {
         if (!searchTerm.trim()) return true;
@@ -200,13 +228,12 @@ const OOSetModelingTool = () => {
                     <div className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
                         <div onClick={() => toggleModule(mod.id)} className="flex-1 flex items-center gap-2 cursor-pointer">
                             {expandedModules[mod.id] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                            {getIconForTree('module')} {/* Ícone de Módulo */}
+                            {getIconForTree('module')}
                             <span className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{mod.name}</span>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
                             <button onClick={() => openModal('package', mod.id, mod.name)} className="p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition text-xs font-medium" title="Adicionar Pacote"><Plus size={16} /></button>
-                            <button onClick={() => openModal('module', null, '', true, mod.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Módulo"><Edit2 size={16} /></button>
-                            <button onClick={() => deleteElement('module', mod.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Módulo"><Trash2 size={16} /></button>
+                            <button onClick={() => handleEntityDelete('module', mod.id, mod.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Módulo"><Trash2 size={16} /></button>
                         </div>
                     </div>
                     {expandedModules[mod.id] && (
@@ -216,13 +243,12 @@ const OOSetModelingTool = () => {
                                     <div className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
                                         <div onClick={() => togglePackage(pkg.id)} className="flex-1 flex items-center gap-2 cursor-pointer">
                                             {expandedPackages[pkg.id] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                                            {getIconForTree('package')} {/* Ícone de Pacote */}
+                                            {getIconForTree('package')}
                                             <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{pkg.name}</span>
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
                                             <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`)} className="p-1.5 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/20 rounded-full transition text-xs font-medium" title="Adicionar Classe"><Plus size={16} /></button>
-                                            <button onClick={() => openModal('package', mod.id, mod.name, true, pkg.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Pacote"><Edit2 size={16} /></button>
-                                            <button onClick={() => deleteElement('package', pkg.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Pacote"><Trash2 size={16} /></button>
+                                            <button onClick={() => handleEntityDelete('package', pkg.id, pkg.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Pacote"><Trash2 size={16} /></button>
                                         </div>
                                     </div>
                                     {expandedPackages[pkg.id] && (
@@ -230,13 +256,13 @@ const OOSetModelingTool = () => {
                                             {pkg.classes.map(cls => (
                                                 <div key={cls.id} className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
                                                     <div className="flex-1 flex items-center gap-2">
-                                                        {getIconForTree('class', cls.type)} {/* Ícone de Classe */}
+                                                        {getIconForTree('class', cls.type)}
                                                         <span className={`text-sm text-neutral-700 dark:text-neutral-200 font-mono`}>{cls.name}</span>
                                                         <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium ml-2">({cls.type.substring(0, 3)})</span>
                                                     </div>
                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
-                                                        <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`, true, cls.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition" title="Editar Classe"><Edit2 size={16} /></button>
-                                                        <button onClick={() => deleteElement('class', cls.id)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Classe"><Trash2 size={16} /></button>
+                                                        <button onClick={() => handleEntityDelete('class', cls.id, cls.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Classe"><Trash2 size={16} /></button>
+
                                                     </div>
                                                 </div>
                                             ))}
@@ -272,14 +298,12 @@ const OOSetModelingTool = () => {
                 // Criação
                 const res = await createProject({ title, description, status: backendStatus, structure });
                 setProjectId(res.id);
-                setSuccess(true);
                 setShowToast(true);
                 setTimeout(() => setShowToast(false), 2500);
             } else {
                 // Atualização
                 const res = await updateProject({ id: projectId, title, description, status: backendStatus, structure });
                 setProject(prev => ({ ...prev, updatedAt: res.updatedAt }));
-                setSuccess(true);
                 setShowToast(true);
                 setTimeout(() => setShowToast(false), 2500);
             }
@@ -354,22 +378,24 @@ const OOSetModelingTool = () => {
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100">Visualização (Teoria dos Conjuntos)</h2>
                         <div className="flex gap-2">
-                            <button
+                            <Button
                                 className="px-4 py-1.5 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-xs"
                                 onClick={handleSaveProject}
                                 disabled={loading}
                             >
                                 Salvar Projeto
-                            </button>
-                            <button
-                                className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs"
-                                onClick={() => setShowAddCollaborator(true)}
-                                type="button"
-                            >
-                                Adicionar colaborador
-                            </button>
+                            </Button>
+                            {userRole !== 'MEMBER' && (
+                                <Button
+                                    className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-xs"
+                                    onClick={() => setShowAddCollaborator(true)}
+                                    type="button"
+                                >
+                                    Adicionar colaborador
+                                </Button>
+                            )}
                             {/* Modal de adicionar colaborador */}
-                            {showAddCollaborator && (
+                            {showAddCollaborator && userRole !== 'MEMBER' && (
                                 <Modal onClose={() => {
                                     setShowAddCollaborator(false);
                                     setCollabEmail('');
@@ -385,7 +411,7 @@ const OOSetModelingTool = () => {
                                                 <h3 className="text-lg font-semibold mb-1">Colaborador adicionado!</h3>
                                                 <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-2">O usuário foi adicionado ao projeto com sucesso.</p>
                                                 <Button
-                                                    variant="success"
+                                                    variant="primary"
                                                     className="px-4 py-1.5 text-xs w-full"
                                                     onClick={() => {
                                                         setShowAddCollaborator(false);
@@ -429,8 +455,21 @@ const OOSetModelingTool = () => {
                                                                 await addProjectMember(projectId, collabEmail);
                                                                 setCollabSuccess('Colaborador adicionado com sucesso!');
                                                                 setCollabEmail('');
-                                                            } catch (err: any) {
-                                                                setCollabError(err?.response?.data?.error || 'Erro ao adicionar colaborador.');
+                                                            } catch (err: unknown) {
+                                                                if (
+                                                                    typeof err === 'object' &&
+                                                                    err !== null &&
+                                                                    'response' in err &&
+                                                                    typeof (err as { response?: unknown }).response === 'object' &&
+                                                                    (err as { response?: { data?: unknown } }).response !== null &&
+                                                                    'data' in (err as { response: { data?: unknown } }).response &&
+                                                                    typeof ((err as { response: { data?: unknown } }).response as { data?: unknown }).data === 'object' &&
+                                                                    ((err as { response: { data?: { error?: string } } }).response.data as { error?: string })?.error
+                                                                ) {
+                                                                    setCollabError(((err as { response: { data: { error?: string } } }).response.data.error) || 'Erro ao adicionar colaborador.');
+                                                                } else {
+                                                                    setCollabError('Erro ao adicionar colaborador.');
+                                                                }
                                                             } finally {
                                                                 setCollabLoading(false);
                                                             }
@@ -457,7 +496,7 @@ const OOSetModelingTool = () => {
                                     </div>
                                 </Modal>
                             )}
-                            <button
+                            <Button
                                 className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-xs"
                                 onClick={async () => {
                                     if (!projectId) return;
@@ -479,13 +518,13 @@ const OOSetModelingTool = () => {
                                 }}
                             >
                                 Exportar
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
                     {/* Toast de sucesso */}
                     {showToast && createPortal(
-                        <div className="fixed top-6 right-6 z-50 bg-emerald-200 text-emerald-800 px-6 py-3 rounded-lg shadow-lg animate-fade-in-out font-semibold text-base border border-emerald-300">
+                        <div className="fixed top-6 right-6 z-50 bg-green-200 text-green-800 px-6 py-3 rounded-lg shadow-lg animate-fade-in-out font-semibold text-base border border-green-300">
                             Projeto salvo com sucesso!
                         </div>,
                         document.body
@@ -500,7 +539,28 @@ const OOSetModelingTool = () => {
                 </Modal>
             )}
             {showRelationModal && (
-                <RelationModal project={project} allClasses={allClasses} onClose={() => setShowRelationModal(false)} onUpdate={setProject} />
+                <RelationModal
+                    project={{
+                        ...project,
+                        modules: project.modules.map(m => m.id)
+                    } as any}
+                    allClasses={allClasses}
+                    onClose={() => setShowRelationModal(false)}
+                    onUpdate={(newProject: any) => {
+                        if (newProject && typeof newProject === 'object' && 'modules' in newProject) {
+                            setProject((prev) => ({ ...prev, ...newProject }));
+                        }
+                    }}
+                />
+            )}
+            {entityModal.open && (
+                <EntityConfirmModal
+                    open={entityModal.open}
+                    onConfirm={confirmEntityDelete}
+                    onCancel={closeEntityModal}
+                    entityType={entityModal.type === 'module' ? 'Módulo' : entityModal.type === 'package' ? 'Pacote' : 'Classe'}
+                    entityName={entityModal.entityName}
+                />
             )}
         </div>
     );

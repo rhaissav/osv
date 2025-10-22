@@ -27,7 +27,7 @@ export class ProjectService {
   }
 
   async findById(id: string) {
-  return this.repository.findById(id);
+    return this.repository.findById(id);
   }
 
   async findAll() {
@@ -35,7 +35,7 @@ export class ProjectService {
   }
 
   async update(id: string, data: UpdateProjectDTO) {
-  return this.repository.update(id, data);
+    return this.repository.update(id, data);
   }
 
   async delete(id: string) {
@@ -55,12 +55,26 @@ export class ProjectService {
 
   async getProjectsForUserWithRole(userId: string) {
     const userProjects = await this.repository.getUserProjects(userId);
+    const adaptMembers = (users: any[]) => users.map((u: any) => ({
+      id: u.user.id,
+      name: u.user.name,
+      email: u.user.email,
+      role: u.role
+    }));
     const meusProjetos = userProjects
       .filter((up: any) => up.role === 'OWNER')
-      .map((up: any) => ({ ...up.project, role: up.role }));
+      .map((up: any) => ({
+        ...up.project,
+        role: up.role,
+        members: adaptMembers(up.project.users)
+      }));
     const colaboradorProjetos = userProjects
       .filter((up: any) => up.role === 'MEMBER')
-      .map((up: any) => ({ ...up.project, role: up.role }));
+      .map((up: any) => ({
+        ...up.project,
+        role: up.role,
+        members: adaptMembers(up.project.users)
+      }));
     return {
       meusProjetos,
       colaboradorProjetos
@@ -114,5 +128,8 @@ export class ProjectService {
       inviteLink
     );
     return { userId, created };
+  }
+  async getProjectMembers(projectId: string) {
+    return this.repository.getProjectMembers(projectId);
   }
 }

@@ -87,7 +87,17 @@ export class ProjectRepository {
   async getUserProjects(userId: string) {
     return prisma.userOnProjects.findMany({
       where: { user_id: userId },
-      include: { project: true }
+      include: {
+        project: {
+          include: {
+            users: {
+              include: {
+                user: true
+              }
+            }
+          }
+        }
+      }
     });
   }
 

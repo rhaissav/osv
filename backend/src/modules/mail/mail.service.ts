@@ -16,10 +16,20 @@ export class MailService {
   }
 
   async sendMail(options: SendMailOptions) {
-    return this.transporter.sendMail({
-      from: 'no-reply@object-set-visualizer.com',
-      ...options,
-    });
+    try {
+      const from = `no-reply@object-set-visualizer.com <${process.env.MAIL_FROM}>`;
+      console.log('[MailService] Enviando e-mail de:', from, '| Para:', options.to);
+      return await this.transporter.sendMail({
+        from,
+        ...options,
+      });
+    } catch (err) {
+      console.error('[MailService] Erro ao enviar e-mail:', err);
+      if (err && typeof err === 'object' && 'response' in err) {
+        console.error('[MailService] Detalhe da resposta:', (err as any).response);
+      }
+      throw err;
+    }
   }
 
   async sendPasswordRecovery(to: string, token: string) {
@@ -34,7 +44,7 @@ export class MailService {
     const infoStyle = `color: #555; font-size: 1rem; margin-bottom: 18px;`;
     const footerStyle = `margin-top: 32px; color: #888; font-size: 0.9rem;`;
     const appStyle = `font-size: 1.1rem; color: #222; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px;`;
-    const aboutStyle = `display:inline-block; margin-top: 8px; color: #2563eb; font-size: 0.98rem; text-decoration: underline;`;
+    const aboutStyle = `display:block; margin-top: 18px; color: #2563eb; font-size: 0.98rem; text-decoration: underline;`;
 
     const html = `
       <body style="${baseStyle}">
@@ -66,7 +76,7 @@ export class MailService {
     const infoStyle = `color: #555; font-size: 1rem; margin-bottom: 18px;`;
     const footerStyle = `margin-top: 32px; color: #888; font-size: 0.9rem;`;
     const appStyle = `font-size: 1.1rem; color: #222; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px;`;
-    const aboutStyle = `display:inline-block; margin-top: 8px; color: #2563eb; font-size: 0.98rem; text-decoration: underline;`;
+    const aboutStyle = `display:block; margin-top: 18px; color: #2563eb; font-size: 0.98rem; text-decoration: underline;`;
 
     if (isRegistered) {
       html = `

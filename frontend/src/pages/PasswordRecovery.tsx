@@ -36,13 +36,6 @@ export default function PasswordRecovery() {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
             <Header />
             <div className="pt-16 flex flex-col md:flex-row items-center justify-center min-h-[80vh] w-full">
-                <div className="flex w-full md:w-1/2 items-center justify-center p-6 md:p-0 h-56 md:h-auto">
-                    <img
-                        src="/password-recovery-illustration.svg"
-                        alt="Ilustração de recuperação de senha"
-                        className="w-40 h-40 md:w-[80%] md:max-h-96 drop-shadow-lg object-contain"
-                    />
-                </div>
                 <form
                     onSubmit={handleSubmit}
                     className="w-full md:w-1/2 p-6 sm:p-10 flex flex-col justify-center"

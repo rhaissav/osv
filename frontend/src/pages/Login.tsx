@@ -35,13 +35,6 @@ export default function Login() {
       <div className="pt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-center min-h-[80vh]">
-            <div className="flex w-full md:w-1/2 items-center justify-center p-6 md:p-0 h-56 md:h-auto">
-              <img
-                src="/login-illustration.svg"
-                alt="Ilustração"
-                className="w-40 h-40 md:w-[80%] md:max-h-96 drop-shadow-lg object-contain"
-              />
-            </div>
             <form
               onSubmit={handleSubmit}
               className="w-full md:w-1/2 p-6 sm:p-10 flex flex-col justify-center"
