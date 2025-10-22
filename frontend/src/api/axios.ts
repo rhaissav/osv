@@ -2,7 +2,7 @@ import axios from 'axios';
 import { parseJwt } from '../utils/jwt';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: import.meta.env.VITE_API_URL_PROD || 'http://localhost:3000',
 });
 
 let refreshing = false;
