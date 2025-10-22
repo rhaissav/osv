@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { PasswordRecoveryController } from './password-recovery.controller.ts';
+import { PasswordRecoveryController } from './password-recovery.controller';
 
 const controller = new PasswordRecoveryController();
 

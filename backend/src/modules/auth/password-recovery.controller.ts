@@ -1,8 +1,8 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import bcrypt from 'bcryptjs';
-import { PasswordRecoveryService } from './password-recovery.service.ts';
-import { UserRepository } from '../user/user.repository.ts';
-import { MailService } from '../mail/mail.service.ts';
+import { PasswordRecoveryService } from './password-recovery.service';
+import { UserRepository } from '../user/user.repository';
+import { MailService } from '../mail/mail.service';
 
 const userRepository = new UserRepository();
 const mailService = new MailService();

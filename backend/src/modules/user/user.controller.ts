@@ -1,7 +1,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { UserService } from './user.service.ts';
-import { UserRepository } from './user.repository.ts';
-import type { UpdateUserDTO } from './user.types.ts';
+import { UserService } from './user.service';
+import { UserRepository } from './user.repository';
+import type { UpdateUserDTO } from './user.types';
 
 const repository = new UserRepository();
 const service = new UserService(repository);

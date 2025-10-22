@@ -1,4 +1,4 @@
-import type { SendMailOptions } from './mail.types.ts';
+import type { SendMailOptions } from './mail.types';
 import nodemailer from 'nodemailer';
 
 export class MailService {

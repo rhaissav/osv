@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { CompleteSignupController } from './complete-signup.controller.ts';
+import { CompleteSignupController } from './complete-signup.controller';
 
 const controller = new CompleteSignupController();
 

@@ -1,4 +1,4 @@
-import { UserRepository } from '../user/user.repository.ts';
+import { UserRepository } from '../user/user.repository';
 import { hash } from 'bcryptjs';
 
 export class CompleteSignupService {

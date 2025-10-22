@@ -1,10 +1,22 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "target": "esnext",
-    "moduleResolution": "NodeNext",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true
-  }
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": [
+      "es2022",
+      "DOM"
+    ],
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/generated/prisma/**"
+  ]
 }

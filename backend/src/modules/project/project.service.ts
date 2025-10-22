@@ -1,7 +1,7 @@
-import { ProjectRepository } from './project.repository.ts';
-import type { CreateProjectDTO, UpdateProjectDTO } from './project.types.ts';
+import { ProjectRepository } from './project.repository';
+import type { CreateProjectDTO, UpdateProjectDTO } from './project.types';
 import { v7 as uuidv7 } from 'uuid';
-import { MailService } from '../mail/mail.service.ts'
+import { MailService } from '../mail/mail.service'
 
 export class ProjectService {
   private readonly repository: ProjectRepository;

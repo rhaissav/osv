@@ -1,8 +1,8 @@
 import PDFDocument from 'pdfkit';
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { ProjectService } from './project.service.ts';
-import { ProjectRepository } from './project.repository.ts';
-import type { CreateProjectDTO, UpdateProjectDTO } from './project.types.ts';
+import { ProjectService } from './project.service';
+import { ProjectRepository } from './project.repository';
+import type { CreateProjectDTO, UpdateProjectDTO } from './project.types';
 
 const repository = new ProjectRepository();
 const service = new ProjectService(repository);

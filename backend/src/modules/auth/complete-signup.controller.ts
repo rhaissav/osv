@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { CompleteSignupService } from './complete-signup.service.ts';
-import { UserRepository } from '../user/user.repository.ts';
+import { CompleteSignupService } from './complete-signup.service';
+import { UserRepository } from '../user/user.repository';
 
 const userRepository = new UserRepository();
 const service = new CompleteSignupService(userRepository);

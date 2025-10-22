@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
-import { UserRepository } from '../user/user.repository.ts';
-import { MailService } from '../mail/mail.service.ts';
+import { UserRepository } from '../user/user.repository';
+import { MailService } from '../mail/mail.service';
 
 export class PasswordRecoveryService {
   private readonly userRepository: UserRepository;

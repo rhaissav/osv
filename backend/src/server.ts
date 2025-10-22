@@ -1,11 +1,11 @@
 import Fastify from 'fastify';
 import fastifyJwt from '@fastify/jwt';
-import { authRoutes } from './modules/auth/routes.ts';
-import corsPlugin from './plugins/cors.ts';
-import { projectRoutes } from './modules/project/routes.ts';
-import { userRoutes } from './modules/user/routes.ts';
-import { passwordRecoveryRoutes } from './modules/auth/password-recovery.routes.ts';
-import { completeSignupRoutes } from './modules/auth/complete-signup.routes.ts';
+import { authRoutes } from './modules/auth/routes';
+import corsPlugin from './plugins/cors';
+import { projectRoutes } from './modules/project/routes';
+import { userRoutes } from './modules/user/routes';
+import { passwordRecoveryRoutes } from './modules/auth/password-recovery.routes';
+import { completeSignupRoutes } from './modules/auth/complete-signup.routes';
 
 const server = Fastify();
 server.register(corsPlugin);

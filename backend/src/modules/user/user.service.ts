@@ -1,5 +1,5 @@
-import { UserRepository } from './user.repository.ts';
-import type { UpdateUserDTO } from './user.types.ts';
+import { UserRepository } from './user.repository';
+import type { UpdateUserDTO } from './user.types';
 
 export class UserService {
   private readonly repository: UserRepository;

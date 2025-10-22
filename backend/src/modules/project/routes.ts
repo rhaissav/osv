@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { ProjectController } from './project.controller.ts';
+import { ProjectController } from './project.controller';
 
 const controller = new ProjectController();
 

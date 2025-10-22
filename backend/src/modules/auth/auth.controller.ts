@@ -1,7 +1,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { AuthService } from './auth.service.ts';
-import { AuthRepository } from './auth.repository.ts';
-import type { RegisterDTO, LoginDTO } from './auth.types.ts';
+import { AuthService } from './auth.service';
+import { AuthRepository } from './auth.repository';
+import type { RegisterDTO, LoginDTO } from './auth.types';
 
 const repository = new AuthRepository();
 const service = new AuthService(repository);
