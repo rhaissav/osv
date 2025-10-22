@@ -1,4 +1,4 @@
-import { Role } from '../../generated/prisma/index.js';
+import { Role } from './auth.types';
 import { AuthRepository } from './auth.repository';
 import type { RegisterDTO, LoginDTO, AuthResponse } from './auth.types';
 import { hash, compare } from 'bcryptjs';

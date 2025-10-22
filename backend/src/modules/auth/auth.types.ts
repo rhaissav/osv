@@ -12,3 +12,8 @@ export interface LoginDTO {
 export interface AuthResponse {
   token: string;
 }
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  USER = 'USER'
+}

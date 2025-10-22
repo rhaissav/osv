@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "es2022",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -13,10 +13,10 @@
     "rootDir": "./src"
   },
   "include": [
-    "./src"
+    "./src",
+    "./prisma"
   ],
   "exclude": [
-    "node_modules",
-    "src/generated/prisma/**"
+    "node_modules"
   ]
 }

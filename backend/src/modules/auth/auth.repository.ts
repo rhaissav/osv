@@ -1,4 +1,5 @@
-import { PrismaClient, Role } from '../../generated/prisma/index.js';
+import { PrismaClient } from '@prisma/client';
+import { Role } from './auth.types'
 
 const prisma = new PrismaClient();
 
