@@ -25,6 +25,13 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
+      - name: Debug DATABASE_URL
+        working-directory: ./backend
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "DATABASE_URL is empty"; else echo "DATABASE_URL is set"; fi
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Run Prisma Migrate
         working-directory: ./backend
         env:
