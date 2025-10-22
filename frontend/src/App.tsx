@@ -9,7 +9,7 @@ import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import ProjectCreate from './pages/ProjectCreate';
 import Sidebar from './components/Sidebar';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import './index.css';
 import ProjectPrintView from './pages/ProjectPrintView';
