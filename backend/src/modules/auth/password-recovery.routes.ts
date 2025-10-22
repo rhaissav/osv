@@ -5,4 +5,5 @@ const controller = new PasswordRecoveryController();
 
 export async function passwordRecoveryRoutes(server: FastifyInstance) {
   server.post('/password-recovery', controller.requestRecovery.bind(controller));
+  server.post('/reset-password', controller.resetPassword.bind(controller));
 }

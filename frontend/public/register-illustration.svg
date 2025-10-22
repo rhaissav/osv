@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="url(#bgGradient)" opacity="0.1"/>
+  
+  <!-- Person icon -->
+  <circle cx="100" cy="70" r="20" fill="url(#primaryGradient)"/>
+  <path d="M65 140 C65 125, 80 115, 100 115 C120 115, 135 125, 135 140 L135 155 L65 155 Z" fill="url(#primaryGradient)"/>
+  
+  <!-- Add/Plus icon -->
+  <circle cx="130" cy="50" r="15" fill="url(#accentGradient)"/>
+  <line x1="125" y1="50" x2="135" y2="50" stroke="white" stroke-width="2"/>
+  <line x1="130" y1="45" x2="130" y2="55" stroke="white" stroke-width="2"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="50" cy="50" r="3" fill="url(#secondaryGradient)" opacity="0.6"/>
+  <circle cx="160" cy="160" r="4" fill="url(#secondaryGradient)" opacity="0.6"/>
+  <circle cx="40" cy="150" r="2" fill="url(#accentGradient)" opacity="0.6"/>
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+</svg>

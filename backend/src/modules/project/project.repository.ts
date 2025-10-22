@@ -1,8 +1,12 @@
+
 import { PrismaClient } from '../../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
 
 export class ProjectRepository {
+  async removeAllUsersFromProject(projectId: string) {
+    return prisma.userOnProjects.deleteMany({ where: { project_id: projectId } });
+  }
   async create(data: any) {
     return prisma.project.create({ data });
   }
@@ -10,7 +14,14 @@ export class ProjectRepository {
   async findById(id: string) {
     return prisma.project.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        structure: true,
+        createdAt: true,
+        updatedAt: true,
         users: true
       }
     });
@@ -21,7 +32,20 @@ export class ProjectRepository {
   }
 
   async update(id: string, data: any) {
-    return prisma.project.update({ where: { id }, data });
+    return prisma.project.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        structure: true,
+        createdAt: true,
+        updatedAt: true,
+        users: true
+      }
+    });
   }
 
   async delete(id: string) {
@@ -63,7 +87,17 @@ export class ProjectRepository {
   async getUserProjects(userId: string) {
     return prisma.userOnProjects.findMany({
       where: { user_id: userId },
-      include: { project: true }
+      include: {
+        project: {
+          include: {
+            users: {
+              include: {
+                user: true
+              }
+            }
+          }
+        }
+      }
     });
   }
 
@@ -79,7 +113,7 @@ export class ProjectRepository {
     });
   }
 
- async findUserByEmail(email: string) {
+  async findUserByEmail(email: string) {
     console.log('Finding user by email:', email);
     return prisma.user.findUnique({ where: { email } });
   }
