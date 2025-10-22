@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup Prisma
         working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Run Prisma Migrate
