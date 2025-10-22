@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "npm ci && npx prisma generate && npx prisma migrate deploy && tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --ext ts --exec npx ts-node src/server.ts"
   },
