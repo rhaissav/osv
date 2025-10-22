@@ -11,4 +11,5 @@ export async function projectRoutes(server: FastifyInstance) {
   server.delete('/projects/:id', controller.delete.bind(controller));
   server.get('/projects/:id/export/pdf', controller.exportToPdf.bind(controller));
   server.post('/projects/:id/users', controller.addMember.bind(controller));
+  server.get('/projects/:id/members', controller.getMembers.bind(controller));
 }

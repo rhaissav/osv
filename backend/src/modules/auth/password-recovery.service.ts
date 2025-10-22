@@ -16,7 +16,13 @@ export class PasswordRecoveryService {
       return;
     }
     const token = uuidv7();
+    const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hora
+    await this.userRepository.update(user.id, {
+      passwordRecoveryToken: token,
+      passwordRecoveryTokenExpires: expires,
+    });
     await this.mailService.sendPasswordRecovery(email, token);
+    console.log('dados', email, token)
     return token;
   }
 }
