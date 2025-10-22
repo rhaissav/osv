@@ -6,6 +6,7 @@ on:
 jobs:
   Deploy-Render:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,8 +22,6 @@ jobs:
 
       - name: Setup Prisma
         working-directory: ./backend
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Debug DATABASE_URL
