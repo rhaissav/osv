@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, X } from 'lucide-react';
 
-// Tipos necessários (copiados de ProjectCreate.tsx)
 interface RelationModel {
     id: string;
     type: 'inheritance' | 'association' | 'aggregation';
@@ -9,11 +8,29 @@ interface RelationModel {
     to: string;
     label: string;
 }
+interface ClassModel {
+    id: string;
+    name: string;
+    type: 'concrete' | 'abstract' | 'interface';
+    attributes: string[];
+    methods: string[];
+}
+interface PackageModel {
+    id: string;
+    name: string;
+    classes: ClassModel[];
+}
+interface ModuleModel {
+    id: string;
+    name: string;
+    packages: PackageModel[];
+}
 interface ProjectModel {
     name: string;
     status: 'development' | 'concluded';
-    modules: string[];
+    modules: ModuleModel[];
     relations: RelationModel[];
+    updatedAt?: string;
 }
 
 interface RelationModalProps {
