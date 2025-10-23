@@ -175,7 +175,15 @@ const OOSetModelingTool = () => {
     }, [id]);
 
 
-    const allClasses = project.modules.flatMap(mod => mod.packages.flatMap(pkg => pkg.classes.map(cls => ({ id: cls.id, label: `${mod.name}/${pkg.name}/${cls.name}`, name: cls.name }))));
+    const allClasses = (project.modules ?? []).flatMap(mod =>
+        (mod.packages ?? []).flatMap(pkg =>
+            (pkg.classes ?? []).map(cls => ({
+                id: cls.id,
+                label: `${mod.name}/${pkg.name}/${cls.name}`,
+                name: cls.name
+            }))
+        )
+    );
 
     const toggleModule = (moduleId: string) => {
         setExpandedModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
@@ -238,7 +246,7 @@ const OOSetModelingTool = () => {
                     </div>
                     {expandedModules[mod.id] && (
                         <div className="ml-5 border-l border-neutral-200 dark:border-neutral-700 pl-3 space-y-1">
-                            {mod.packages.map(pkg => (
+                            {(mod.packages ?? []).map(pkg => (
                                 <div key={pkg.id} className="space-y-1">
                                     <div className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
                                         <div onClick={() => togglePackage(pkg.id)} className="flex-1 flex items-center gap-2 cursor-pointer">
@@ -253,7 +261,7 @@ const OOSetModelingTool = () => {
                                     </div>
                                     {expandedPackages[pkg.id] && (
                                         <div className="ml-5 border-l border-neutral-200 dark:border-neutral-700 pl-3 space-y-1">
-                                            {pkg.classes.map(cls => (
+                                            {(pkg.classes ?? []).map(cls => (
                                                 <div key={cls.id} className="group flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 rounded-lg transition p-2">
                                                     <div className="flex-1 flex items-center gap-2">
                                                         {getIconForTree('class', cls.type)}
@@ -540,10 +548,7 @@ const OOSetModelingTool = () => {
             )}
             {showRelationModal && (
                 <RelationModal
-                    project={{
-                        ...project,
-                        modules: project.modules.map(m => m.id)
-                    } as any}
+                    project={project}
                     allClasses={allClasses}
                     onClose={() => setShowRelationModal(false)}
                     onUpdate={(newProject: any) => {

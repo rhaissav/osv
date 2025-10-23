@@ -99,8 +99,12 @@ interface SetTheoryViewProps {
 }
 
 const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
-    const allClasses = project.modules.flatMap(m => m.packages.flatMap(p => p.classes));
-    const relationCounts = project.relations.reduce((acc, r) => {
+    const allClasses = (project.modules ?? []).flatMap(m =>
+        (m.packages ?? []).flatMap(p =>
+            (p.classes ?? [])
+        )
+    );
+    const relationCounts = (project.relations ?? []).reduce((acc, r) => {
         acc[r.type] = (acc[r.type] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
@@ -151,8 +155,8 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {[
-                        { label: 'Módulos (M)', value: project.modules.length, color: 'blue' },
-                        { label: 'Pacotes (P)', value: project.modules.reduce((a, m) => a + m.packages.length, 0), color: 'purple' },
+                        { label: 'Módulos (M)', value: (project.modules ?? []).length, color: 'blue' },
+                        { label: 'Pacotes (P)', value: (project.modules ?? []).reduce((a, m) => a + ((m.packages ?? []).length), 0), color: 'purple' },
                         { label: 'Classes (C)', value: allClasses.length, color: 'emerald' },
                         ...RelationTypesForView.map(stat => ({
                             label: stat.label,
@@ -176,12 +180,12 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </div>
             <Section title="Módulos">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {project.modules.map(mod => {
-                        const packageNames = mod.packages.map(p => p.name.replace(/\s/g, '_'));
+                    {(project.modules ?? []).map(mod => {
+                        const packageNames = (mod.packages ?? []).map(p => (p?.name ?? '').replace(/\s/g, '_'));
                         return (
                             <Formula
                                 key={mod.id}
-                                label={`M_${mod.name.replace(/\s/g, '_')}`}
+                                label={`M_${(mod?.name ?? '').replace(/\s/g, '_')}`}
                                 formula={packageNames.join(', ') || '∅'}
                                 labelColor="text-neutral-600 dark:text-neutral-400"
                                 formulaColor="text-neutral-600 dark:text-neutral-400"
@@ -192,12 +196,12 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </Section>
             <Section title="Pacotes">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {project.modules.flatMap(mod => mod.packages.map(pkg => {
-                        const classNames = pkg.classes.map(c => c.name.replace(/\s/g, '_'));
+                    {(project.modules ?? []).flatMap(mod => (mod.packages ?? []).map(pkg => {
+                        const classNames = (pkg.classes ?? []).map(c => (c?.name ?? '').replace(/\s/g, '_'));
                         return (
                             <Formula
                                 key={pkg.id}
-                                label={`P_${pkg.name.replace(/\s/g, '_')}`}
+                                label={`P_${(pkg?.name ?? '').replace(/\s/g, '_')}`}
                                 formula={classNames.join(', ') || '∅'}
                                 labelColor="text-neutral-600 dark:text-neutral-400"
                                 formulaColor="text-neutral-600 dark:text-neutral-400"
@@ -208,8 +212,8 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </Section>
             <Section title="Classes">
                 <div className="grid grid-cols-1 gap-6">
-                    {allClasses.map(cls => (
-                        <div key={cls.id} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
+                    {(allClasses ?? []).map(cls => (
+                        <div key={cls.id || cls.name} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
                             <div className="flex items-center gap-2 font-mono border-b border-neutral-100 dark:border-neutral-600 pb-2 mb-2">
                                 <span className="text-neutral-600 dark:text-neutral-400 font-semibold text-xl">C_{cls.name.replace(/\s/g, '_')} = <span className="text-neutral-600 dark:text-neutral-400">{'{ '}D, F{' }'}</span></span>
                                 <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-auto px-2 py-0.5 bg-neutral-100 dark:bg-neutral-700 rounded-full border border-neutral-300 dark:border-neutral-600 font-normal">
@@ -220,13 +224,13 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                                 <div className="p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg border border-neutral-200 dark:border-neutral-700">
                                     <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">D (Atributos) =</p>
                                     <div className="font-mono text-base text-neutral-800 dark:text-neutral-100 font-semibold break-words">
-                                        {'{'}{cls.attributes.join(', ') || '∅'}{'}'}
+                                        {'{'}{(cls.attributes ?? []).join(', ') || '∅'}{' }'}
                                     </div>
                                 </div>
                                 <div className="p-3 bg-neutral-50 dark:bg-neutral-700 rounded-lg border border-neutral-200 dark:border-neutral-700">
                                     <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">F (Métodos) =</p>
                                     <div className="font-mono text-base text-neutral-800 dark:text-neutral-100 font-semibold break-words">
-                                        {'{'}{cls.methods.join(', ') || '∅'}{'}'}
+                                        {'{'}{(cls.methods ?? []).join(', ') || '∅'}{' }'}
                                     </div>
                                 </div>
                             </div>
@@ -236,12 +240,11 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </Section>
             {project.relations.length > 0 && (
                 <Section title="Relações (R)">
-                    <div className="space-y-4">
-                        {project.relations.map(rel => {
-                            const fromCls = allClasses.find(c => c.id === rel.from);
-                            const toCls = allClasses.find(c => c.id === rel.to);
-                            const typeKey = rel.type as RelationTypeKey;
-                            const meta = relationMeta[typeKey] || { color: 'gray', title: '', formula: '', desc: '' };
+                    <div className="space-y-6">
+                        {(['inheritance', 'association', 'aggregation'] as RelationTypeKey[]).map(typeKey => {
+                            const rels = project.relations.filter(r => r.type === typeKey);
+                            if (rels.length === 0) return null;
+                            const meta = relationMeta[typeKey];
                             const dynamicColorClasses = {
                                 blue: { text: 'text-blue-600', text700: 'text-blue-700', bg100: 'bg-blue-100' },
                                 emerald: { text: 'text-emerald-600', text700: 'text-emerald-700', bg100: 'bg-emerald-100' },
@@ -250,17 +253,24 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                             const colorSet = dynamicColorClasses[meta.color as keyof typeof dynamicColorClasses] || dynamicColorClasses.blue;
                             const textColor = colorSet.text;
                             return (
-                                <div key={rel.id} className="font-mono text-sm py-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`font-semibold ${textColor}`}>{rel.label}</span>
-                                        <span className="text-neutral-600 dark:text-neutral-400 ml-2">
-                                            = {'{'} <span className="text-neutral-900 dark:text-neutral-100">
-                                                (C_{fromCls?.name.replace(/\s/g, '_') ?? '?'}, C_{toCls?.name.replace(/\s/g, '_') ?? '?'})
-                                            </span> {'}'}
-                                        </span>
-                                        <span className={`ml-4 text-xs px-2 py-1 rounded-full font-bold uppercase ${colorSet.bg100} ${colorSet.text700} border border-neutral-300`}>
-                                            {rel.type}
-                                        </span>
+                                <div key={typeKey} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-2">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className={`font-semibold text-lg ${textColor}`}>{meta.title.split(' ')[0]}</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        {rels.map(rel => {
+                                            const fromCls = allClasses.find(c => c.id === rel.from);
+                                            const toCls = allClasses.find(c => c.id === rel.to);
+                                            return (
+                                                <div key={rel.id} className="font-mono text-sm">
+                                                    <span className="text-neutral-600 dark:text-neutral-400">
+                                                        = {'{'} <span className="text-neutral-900 dark:text-neutral-100">
+                                                            (C_{fromCls?.name.replace(/\s/g, '_') ?? '?'}, C_{toCls?.name.replace(/\s/g, '_') ?? '?'} )
+                                                        </span> {'}'}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             );
