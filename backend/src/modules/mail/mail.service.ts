@@ -34,7 +34,7 @@ export class MailService {
 
   async sendPasswordRecovery(to: string, token: string) {
     const appName = 'Object Set Visualizer';
-    const appUrl = 'http://localhost:5173';
+    const appUrl = process.env.APP_URL;
     const aboutUrl = `${appUrl}/about`;
     const link = `${appUrl}/reset-password?token=${token}`;
     const baseStyle = `font-family: Arial, Helvetica, sans-serif; background: #f6f8fa; margin:0; padding:0;`;
