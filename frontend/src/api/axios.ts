@@ -2,7 +2,7 @@ import axios from 'axios';
 import { parseJwt } from '../utils/jwt';
 
 const api = axios.create({
-    baseURL: 'https://osv-do5t.onrender.com',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 });
 
 let refreshing = false;
