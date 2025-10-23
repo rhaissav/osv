@@ -13,6 +13,7 @@ import { useState } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import './index.css';
 import ProjectPrintView from './pages/ProjectPrintView';
+import CompleteSignup from './pages/CompleteSignup'
 
 
 function ProtectedLayout() {
@@ -35,6 +36,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
+        <Route path="/complete-signup" element={<CompleteSignup />} />
         <Route element={<PrivateRoute />}>
           <Route path="/project/:id/print-view" element={<ProjectPrintView />} />
           <Route element={<ProtectedLayout />}>
