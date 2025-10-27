@@ -32,8 +32,8 @@ export default function Projects() {
     const [tab, setTab] = useState<'meus' | 'colaborador'>('meus');
     const [search, setSearch] = useState('');
     const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
-    const [setCollabModalOpen] = useState(false);
-    const [setCollabToRemove] = useState<{ project: Project; member: Member } | null>(null);
+    const [collabModalOpen, setCollabModalOpen] = useState(false);
+    const [collabToRemove, setCollabToRemove] = useState<{ project: Project; member: Member } | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -221,6 +221,32 @@ export default function Projects() {
                     )}
                 </div>
             </div>
+            {/* Modal de confirmação de remoção de colaborador */}
+            <ConfirmModal
+                open={collabModalOpen}
+                title="Remover colaborador"
+                description={`Tem certeza que deseja remover o colaborador "${collabToRemove?.member.name || collabToRemove?.member.email || ''}" deste projeto? Essa ação não pode ser desfeita.`}
+                confirmText="Remover"
+                cancelText="Cancelar"
+                onConfirm={async () => {
+                    if (!collabToRemove) return;
+                    try {
+                        await api.delete(`/projects/${collabToRemove.project.id}/members/${collabToRemove.member.id}`);
+                        const updated = collabToRemove.project.members.filter(mem => mem.id !== collabToRemove.member.id);
+                        if (tab === 'meus') {
+                            setMeusProjetos(prev => prev.map(p => p.id === collabToRemove.project.id ? { ...p, members: updated } : p));
+                        } else {
+                            setColaboradorProjetos(prev => prev.map(p => p.id === collabToRemove.project.id ? { ...p, members: updated } : p));
+                        }
+                    } catch {
+                        setError('Erro ao remover colaborador.');
+                    } finally {
+                        setCollabModalOpen(false);
+                        setCollabToRemove(null);
+                    }
+                }}
+                onCancel={() => { setCollabModalOpen(false); setCollabToRemove(null); }}
+            />
         </div>
     );
 }
