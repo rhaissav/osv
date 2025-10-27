@@ -146,18 +146,14 @@ export default function Projects() {
                                                     <Link to={`/projects/${project.id}/edit`} className="p-2 rounded text-blue-600" title="Editar">
                                                         <FaEdit />
                                                     </Link>
-                                                    {(() => {
-                                                        const myMember = project.members.find(m => m.id === userId);
-                                                        return myMember?.role === 'OWNER' ? (
-                                                            <button
-                                                                className="p-2 rounded text-orange-600"
-                                                                title="Remover"
-                                                                onClick={() => { setProjectToDelete(project); setModalOpen(true); }}
-                                                            >
-                                                                <FaTrash />
-                                                            </button>
-                                                        ) : null;
-                                                    })()}
+
+                                                    <button
+                                                        className="p-2 rounded text-orange-600"
+                                                        title="Remover"
+                                                        onClick={() => { setProjectToDelete(project); setModalOpen(true); }}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
                                                     <ConfirmModal
                                                         open={modalOpen}
                                                         onConfirm={handleDeleteProject}
@@ -189,15 +185,17 @@ export default function Projects() {
                                                                 <div className="w-1/3">Email</div>
                                                                 <div className="w-1/3">Categoria</div>
                                                             </div>
-                                                            {(project.members as Member[]).map((m) => (
-                                                                <div key={m.id} className="flex items-center text-xs py-1 border-b last:border-b-0">
-                                                                    <div className="w-1/3 font-medium">{m.name || '(sem nome)'}</div>
-                                                                    <div className="w-1/3 text-gray-600">{m.email}</div>
-                                                                    <div className="w-1/3">
-                                                                        <span className={`px-2 py-0.5 rounded text-xs font-bold ${m.role === 'OWNER' ? 'bg-orange-500 text-white' : 'bg-blue-600 text-white'}`}>{m.role === 'OWNER' ? 'Dono' : 'Colaborador'}</span>
+                                                            {(project.members as Member[]).map((m) => {
+                                                                return (
+                                                                    <div key={m.id} className="flex items-center text-xs py-1 border-b last:border-b-0">
+                                                                        <div className="w-1/3 font-medium">{m.name || '(sem nome)'}</div>
+                                                                        <div className="w-1/3 text-gray-600">{m.email}</div>
+                                                                        <div className="w-1/3">
+                                                                            <span className={`px-2 py-0.5 rounded text-xs font-bold ${m.role === 'OWNER' ? 'bg-orange-500 text-white' : 'bg-blue-600 text-white'}`}>{m.role === 'OWNER' ? 'Proprietário' : 'Colaborador'}</span>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </td>
                                                 </tr>

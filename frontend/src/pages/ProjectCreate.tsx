@@ -15,6 +15,7 @@ import {
     ChevronDown,
     ChevronRight,
     Search,
+    Pencil,
     Package as PackageIcon,
     Folder as FolderIcon,
     Box as BoxIcon,
@@ -241,6 +242,7 @@ const OOSetModelingTool = () => {
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
                             <button onClick={() => openModal('package', mod.id, mod.name)} className="p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-full transition text-xs font-medium" title="Adicionar Pacote"><Plus size={16} /></button>
+                            <button onClick={() => openModal('module', null, '', true, mod.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700/20 rounded-full transition text-xs font-medium" title="Editar Módulo"><Pencil size={16} /></button>
                             <button onClick={() => handleEntityDelete('module', mod.id, mod.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Módulo"><Trash2 size={16} /></button>
                         </div>
                     </div>
@@ -256,6 +258,7 @@ const OOSetModelingTool = () => {
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
                                             <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`)} className="p-1.5 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/20 rounded-full transition text-xs font-medium" title="Adicionar Classe"><Plus size={16} /></button>
+                                            <button onClick={() => openModal('package', mod.id, mod.name, true, pkg.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700/20 rounded-full transition text-xs font-medium" title="Editar Pacote"><Pencil size={16} /></button>
                                             <button onClick={() => handleEntityDelete('package', pkg.id, pkg.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Pacote"><Trash2 size={16} /></button>
                                         </div>
                                     </div>
@@ -269,8 +272,8 @@ const OOSetModelingTool = () => {
                                                         <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium ml-2">({cls.type.substring(0, 3)})</span>
                                                     </div>
                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition pr-2">
+                                                        <button onClick={() => openModal('class', pkg.id, `${mod.name}/${pkg.name}`, true, cls.id)} className="p-1.5 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700/20 rounded-full transition text-xs font-medium" title="Editar Classe"><Pencil size={16} /></button>
                                                         <button onClick={() => handleEntityDelete('class', cls.id, cls.name)} className="p-1.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-full transition" title="Remover Classe"><Trash2 size={16} /></button>
-
                                                     </div>
                                                 </div>
                                             ))}

@@ -104,6 +104,12 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             (p.classes ?? [])
         )
     );
+
+    const classTypeMeta: Record<'concrete' | 'abstract' | 'interface', { label: string, color: string }> = {
+        concrete: { label: 'Concreta', color: 'emerald' },
+        abstract: { label: 'Abstrata', color: 'orange' },
+        interface: { label: 'Interface', color: 'blue' },
+    };
     const relationCounts = (project.relations ?? []).reduce((acc, r) => {
         acc[r.type] = (acc[r.type] || 0) + 1;
         return acc;
@@ -216,8 +222,8 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                         <div key={cls.id || cls.name} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
                             <div className="flex items-center gap-2 font-mono border-b border-neutral-100 dark:border-neutral-600 pb-2 mb-2">
                                 <span className="text-neutral-600 dark:text-neutral-400 font-semibold text-xl">C_{cls.name.replace(/\s/g, '_')} = <span className="text-neutral-600 dark:text-neutral-400">{'{ '}D, F{' }'}</span></span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-auto px-2 py-0.5 bg-neutral-100 dark:bg-neutral-700 rounded-full border border-neutral-300 dark:border-neutral-600 font-normal">
-                                    {cls.type.charAt(0).toUpperCase() + cls.type.slice(1)}
+                                <span className={`text-xs ml-auto px-2 py-0.5 rounded-full border font-normal bg-${classTypeMeta[cls.type].color}-100 border-${classTypeMeta[cls.type].color}-300 text-${classTypeMeta[cls.type].color}-700 dark:bg-${classTypeMeta[cls.type].color}-700 dark:border-${classTypeMeta[cls.type].color}-600 dark:text-${classTypeMeta[cls.type].color}-200`}>
+                                    {classTypeMeta[cls.type].label}
                                 </span>
                             </div>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ml-2">
