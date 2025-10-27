@@ -1,73 +1,60 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Frontend - Gerenciador de Projetos
 
-Currently, two official plugins are available:
+## Descrição
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Aplicação React + TypeScript + Vite para gestão de projetos colaborativos, integração com backend Node.js, permissões de membros, visualização OOP e exportação PDF.
 
-## React Compiler
+## Principais Funcionalidades
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Listagem, criação, edição e remoção de projetos
+- Adição e remoção de membros (com permissões OWNER/MEMBER)
+- Visualização de estrutura de projeto (módulos, pacotes, classes, relações)
+- Modal de confirmação para remoção de projetos e membros
+- Exportação de projeto em PDF
+- Autenticação integrada ao backend
 
-## Expanding the ESLint configuration
+## Como rodar localmente
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Instale as dependências:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```sh
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Execute em modo desenvolvimento:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```sh
+   npm run dev
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+   O app estará disponível em `http://localhost:5173` (ou porta configurada no Vite).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Build para produção
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Rode o build:
+
+   ```sh
+   npm run build
+   ```
+
+2. Sirva os arquivos estáticos do diretório `dist`.
+
+## Estrutura de pastas
+
+ - `src/pages` — Páginas principais (Projects, ProjectCreate, Login, etc.)
+ - `src/components` — Componentes reutilizáveis (Button, ConfirmModal, Sidebar, etc.)
+ - `src/api` — Integração com backend (axios, endpoints)
+ - `src/routes` — Gerenciamento de rotas da aplicação (React Router)
+ - `src/utils` — Funções utilitárias e helpers (ex: JWT, validações)
+
+## Observações
+
+- O frontend consome a API do backend (ver pasta `backend`).
+- Permissões: apenas OWNER pode adicionar e remover membros.
+- Modais de confirmação garantem segurança nas ações destrutivas.
+- Para exportar PDF, o backend deve estar rodando e configurado.
+
+---
+
+Dúvidas? Abra uma issue!
