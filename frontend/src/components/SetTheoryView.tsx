@@ -57,12 +57,27 @@ interface RelationModel {
     to: string;
     label: string;
 }
+interface Member {
+    id: string;
+    name?: string;
+    email: string;
+    role: 'OWNER' | 'MEMBER';
+}
+
 interface ProjectModel {
-    name: string;
-    status: 'development' | 'concluded';
-    modules: ModuleModel[];
-    relations: RelationModel[];
+    id?: string;
+    title: string;
+    description?: string;
+    createdAt?: string;
     updatedAt?: string;
+    structure: {
+        name: string;
+        modules: ModuleModel[];
+        relations: RelationModel[];
+    };
+    status: 'EM_ANDAMENTO' | 'CONCLUIDO';
+    role?: 'OWNER' | 'MEMBER';
+    members?: Member[];
 }
 
 type RelationTypeKey = 'inheritance' | 'association' | 'aggregation';
@@ -88,9 +103,9 @@ const relationMeta: Record<RelationTypeKey, { title: string, formula: string, de
     },
 };
 
-const StatusOptions: Record<'development' | 'concluded', { label: string, color: string }> = {
-    development: { label: 'Em Andamento', color: 'orange' },
-    concluded: { label: 'Concluído', color: 'emerald' },
+const StatusOptions: Record<'EM_ANDAMENTO' | 'CONCLUIDO', { label: string, color: string }> = {
+    EM_ANDAMENTO: { label: 'Em Andamento', color: 'orange' },
+    CONCLUIDO: { label: 'Concluído', color: 'emerald' },
 };
 
 interface SetTheoryViewProps {
@@ -99,7 +114,7 @@ interface SetTheoryViewProps {
 }
 
 const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
-    const allClasses = (project.modules ?? []).flatMap(m =>
+    const allClasses = (project.structure?.modules ?? []).flatMap(m =>
         (m.packages ?? []).flatMap(p =>
             (p.classes ?? [])
         )
@@ -110,7 +125,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
         abstract: { label: 'Abstrata', color: 'orange' },
         interface: { label: 'Interface', color: 'blue' },
     };
-    const relationCounts = (project.relations ?? []).reduce((acc, r) => {
+    const relationCounts = (project.structure?.relations ?? []).reduce((acc, r) => {
         acc[r.type] = (acc[r.type] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
@@ -123,7 +138,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
 
     const currentStatus = StatusOptions[project.status];
 
-    const handleStatusChange = (newStatus: 'development' | 'concluded') => {
+    const handleStatusChange = (newStatus: 'EM_ANDAMENTO' | 'CONCLUIDO') => {
         const newProject = structuredClone(project);
         newProject.status = newStatus;
         onUpdate(newProject);
@@ -141,7 +156,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                         <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Representação - Contagem</h3>
                         <select
                             value={project.status}
-                            onChange={(e) => handleStatusChange(e.target.value as 'development' | 'concluded')}
+                            onChange={(e) => handleStatusChange(e.target.value as 'EM_ANDAMENTO' | 'CONCLUIDO')}
                             className={`py-1.5 px-3 rounded-lg text-xs font-semibold uppercase transition-colors appearance-none cursor-pointer border border-neutral-300 dark:border-neutral-700
                         text-${currentStatus.color}-700 bg-${currentStatus.color}-50 dark:text-${currentStatus.color}-300 dark:bg-${currentStatus.color}-900/40`}
                         >
@@ -153,7 +168,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                     </div>
                     {/* Segunda linha: nome do projeto e última atualização */}
                     <div className="flex flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">{project.name}</p>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">{project.title}</p>
                         <span className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">
                             Última atualização: {updatedAt ? `${updatedAt.toLocaleDateString()} ${updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
                         </span>
@@ -161,8 +176,8 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {[
-                        { label: 'Módulos (M)', value: (project.modules ?? []).length, color: 'blue' },
-                        { label: 'Pacotes (P)', value: (project.modules ?? []).reduce((a, m) => a + ((m.packages ?? []).length), 0), color: 'purple' },
+                        { label: 'Módulos (M)', value: (project.structure?.modules ?? []).length, color: 'blue' },
+                        { label: 'Pacotes (P)', value: (project.structure?.modules ?? []).reduce((a: number, m: ModuleModel) => a + ((m.packages ?? []).length), 0), color: 'purple' },
                         { label: 'Classes (C)', value: allClasses.length, color: 'emerald' },
                         ...RelationTypesForView.map(stat => ({
                             label: stat.label,
@@ -186,12 +201,12 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </div>
             <Section title="Módulos">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(project.modules ?? []).map(mod => {
+                    {(project.structure?.modules ?? []).map(mod => {
                         const packageNames = (mod.packages ?? []).map(p => (p?.name ?? '').replace(/\s/g, '_'));
                         return (
                             <Formula
                                 key={mod.id}
-                                label={`M_${(mod?.name ?? '').replace(/\s/g, '_')}`}
+                                label={`${(mod?.name ?? '').replace(/\s/g, '_')}`}
                                 formula={packageNames.join(', ') || '∅'}
                                 labelColor="text-neutral-600 dark:text-neutral-400"
                                 formulaColor="text-neutral-600 dark:text-neutral-400"
@@ -202,12 +217,12 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
             </Section>
             <Section title="Pacotes">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(project.modules ?? []).flatMap(mod => (mod.packages ?? []).map(pkg => {
+                    {(project.structure?.modules ?? []).flatMap(mod => (mod.packages ?? []).map(pkg => {
                         const classNames = (pkg.classes ?? []).map(c => (c?.name ?? '').replace(/\s/g, '_'));
                         return (
                             <Formula
                                 key={pkg.id}
-                                label={`P_${(pkg?.name ?? '').replace(/\s/g, '_')}`}
+                                label={`${(pkg?.name ?? '').replace(/\s/g, '_')}`}
                                 formula={classNames.join(', ') || '∅'}
                                 labelColor="text-neutral-600 dark:text-neutral-400"
                                 formulaColor="text-neutral-600 dark:text-neutral-400"
@@ -221,7 +236,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                     {(allClasses ?? []).map(cls => (
                         <div key={cls.id || cls.name} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
                             <div className="flex items-center gap-2 font-mono border-b border-neutral-100 dark:border-neutral-600 pb-2 mb-2">
-                                <span className="text-neutral-600 dark:text-neutral-400 font-semibold text-xl">C_{cls.name.replace(/\s/g, '_')} = <span className="text-neutral-600 dark:text-neutral-400">{'{ '}D, F{' }'}</span></span>
+                                <span className="text-neutral-600 dark:text-neutral-400 font-semibold text-xl">{cls.name.replace(/\s/g, '_')} = <span className="text-neutral-600 dark:text-neutral-400">{'{ '}D, F{' }'}</span></span>
                                 <span className={`text-xs ml-auto px-2 py-0.5 rounded-full border font-normal bg-${classTypeMeta[cls.type].color}-100 border-${classTypeMeta[cls.type].color}-300 text-${classTypeMeta[cls.type].color}-700 dark:bg-${classTypeMeta[cls.type].color}-700 dark:border-${classTypeMeta[cls.type].color}-600 dark:text-${classTypeMeta[cls.type].color}-200`}>
                                     {classTypeMeta[cls.type].label}
                                 </span>
@@ -244,11 +259,11 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                     ))}
                 </div>
             </Section>
-            {project.relations.length > 0 && (
+            {(project.structure?.relations?.length ?? 0) > 0 && (
                 <Section title="Relações (R)">
                     <div className="space-y-6">
                         {(['inheritance', 'association', 'aggregation'] as RelationTypeKey[]).map(typeKey => {
-                            const rels = project.relations.filter(r => r.type === typeKey);
+                            const rels = project.structure.relations.filter(r => r.type === typeKey);
                             if (rels.length === 0) return null;
                             const meta = relationMeta[typeKey];
                             const dynamicColorClasses = {
@@ -271,7 +286,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                                                 <div key={rel.id} className="font-mono text-sm">
                                                     <span className="text-neutral-600 dark:text-neutral-400">
                                                         = {'{'} <span className="text-neutral-900 dark:text-neutral-100">
-                                                            (C_{fromCls?.name.replace(/\s/g, '_') ?? '?'}, C_{toCls?.name.replace(/\s/g, '_') ?? '?'} )
+                                                            ({fromCls?.name.replace(/\s/g, '_') ?? '?'}, {toCls?.name.replace(/\s/g, '_') ?? '?'} )
                                                         </span> {'}'}
                                                     </span>
                                                 </div>
@@ -284,7 +299,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                     </div>
                 </Section>
             )}
-            {project.modules.length === 0 && (
+            {(project.structure?.modules?.length ?? 0) === 0 && (
                 <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 p-12 text-center">
                     <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Modelo Vazio</h3>
                     <p className="text-neutral-600 dark:text-neutral-400 mb-4">Crie seu primeiro Módulo no painel lateral para começar.</p>

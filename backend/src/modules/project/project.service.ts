@@ -4,6 +4,14 @@ import { v7 as uuidv7 } from 'uuid';
 import { MailService } from '../mail/mail.service'
 
 export class ProjectService {
+  async removeMember(projectId: string, userId: string) {
+    console.log(projectId, userId)
+    const userRole = await this.repository.getUserRoleInProject(projectId, userId);
+    if (userRole?.role === 'OWNER') {
+      throw new Error('Não é possível remover o proprietário do projeto.');
+    }
+    return this.repository.removeUserFromProject(projectId, userId);
+  }
   private readonly repository: ProjectRepository;
   private readonly mailService: MailService;
   constructor(repository: ProjectRepository) {
@@ -61,20 +69,23 @@ export class ProjectService {
       email: u.user.email,
       role: u.role
     }));
+
+
+    const adaptProject = (up: any) => {
+      const { users, ...projectData } = up.project;
+      return {
+        ...projectData,
+        role: up.role,
+        members: adaptMembers(up.project.users)
+      };
+    };
+
     const meusProjetos = userProjects
       .filter((up: any) => up.role === 'OWNER')
-      .map((up: any) => ({
-        ...up.project,
-        role: up.role,
-        members: adaptMembers(up.project.users)
-      }));
+      .map(adaptProject);
     const colaboradorProjetos = userProjects
       .filter((up: any) => up.role === 'MEMBER')
-      .map((up: any) => ({
-        ...up.project,
-        role: up.role,
-        members: adaptMembers(up.project.users)
-      }));
+      .map(adaptProject);
     return {
       meusProjetos,
       colaboradorProjetos

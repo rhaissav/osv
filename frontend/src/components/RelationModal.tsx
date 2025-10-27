@@ -25,12 +25,29 @@ interface ModuleModel {
     name: string;
     packages: PackageModel[];
 }
-interface ProjectModel {
+interface Member {
+    id: string;
+    name?: string;
+    email: string;
+    role: 'OWNER' | 'MEMBER';
+}
+
+interface ProjectStructure {
     name: string;
-    status: 'development' | 'concluded';
     modules: ModuleModel[];
     relations: RelationModel[];
+}
+
+interface ProjectModel {
+    id?: string;
+    title: string;
+    description?: string;
+    createdAt?: string;
     updatedAt?: string;
+    status: 'EM_ANDAMENTO' | 'CONCLUIDO';
+    structure: ProjectStructure;
+    role?: 'OWNER' | 'MEMBER';
+    members?: Member[];
 }
 
 interface RelationModalProps {
@@ -78,7 +95,7 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
         if (!fromClass || !toClass || fromClass === toClass) return;
         const newProject = structuredClone(project) as ProjectModel;
         const meta = relationMeta[relationType];
-        newProject.relations.push({
+        newProject.structure.relations.push({
             id: `r${Date.now()}`,
             type: relationType,
             from: fromClass,
@@ -92,7 +109,7 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
 
     const deleteRelation = (id: string) => {
         const newProject = structuredClone(project) as ProjectModel;
-        newProject.relations = newProject.relations.filter(r => r.id !== id);
+        newProject.structure.relations = newProject.structure.relations.filter(r => r.id !== id);
         onUpdate(newProject);
     };
 
@@ -169,13 +186,13 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
                     </div>
                     <div>
                         <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
-                            Relações Existentes ({project.relations.length})
+                            Relações Existentes ({project.structure.relations.length})
                         </h4>
                         <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                            {project.relations.length === 0 ? (
+                            {project.structure.relations.length === 0 ? (
                                 <p className="text-neutral-500 dark:text-neutral-400 text-sm text-center py-4 border border-neutral-200 dark:border-neutral-700 rounded-lg">Nenhuma relação definida.</p>
                             ) : (
-                                project.relations.map((rel) => {
+                                project.structure.relations.map((rel) => {
                                     const config = relationMeta[rel.type as RelationTypeKey];
                                     const dynamicClasses = dynamicColorClasses[config.color as keyof typeof dynamicColorClasses] || dynamicColorClasses.blue;
                                     const From = allClasses.find((c) => c.id === rel.from);
@@ -190,7 +207,7 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
                                                 </span>
                                                 <span className="text-neutral-600 dark:text-neutral-400 ml-2">
                                                     = {'{'} <span className="text-neutral-900 dark:text-neutral-100">
-                                                        (C_{fromName}, C_{toName})
+                                                        ({fromName}, {toName})
                                                     </span> {'}'}
                                                 </span>
                                             </div>

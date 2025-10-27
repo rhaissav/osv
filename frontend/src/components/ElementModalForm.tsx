@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, X } from 'lucide-react';
-
-// Tipos necessários (copiados de ProjectCreate.tsx)
 interface Attribute {
     name: string;
     type: string;
@@ -44,8 +42,23 @@ interface ProjectStructure {
     modules: ModuleModel[];
     relations: RelationModel[];
 }
-interface ProjectModel extends ProjectStructure {
-    status: 'development' | 'concluded';
+interface Member {
+    id: string;
+    name?: string;
+    email: string;
+    role: 'OWNER' | 'MEMBER';
+}
+
+interface ProjectModel {
+    id?: string;
+    title: string;
+    description?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    status: 'EM_ANDAMENTO' | 'CONCLUIDO';
+    structure: ProjectStructure;
+    role?: 'OWNER' | 'MEMBER';
+    members?: Member[];
 }
 
 interface ModalFormProps {
@@ -83,15 +96,15 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
     useEffect(() => {
         if (modalMode.editMode && modalMode.editId) {
             if (modalMode.type === 'module') {
-                const element = initialProject.modules.find(m => m.id === modalMode.editId);
+                const element = initialProject.structure.modules.find(m => m.id === modalMode.editId);
                 if (element) setFormData(prev => ({ ...prev, name: element.name }));
             } else if (modalMode.type === 'package') {
-                initialProject.modules.forEach(mod => {
+                initialProject.structure.modules.forEach(mod => {
                     const pkg = mod.packages.find(p => p.id === modalMode.editId);
                     if (pkg) setFormData(prev => ({ ...prev, name: pkg.name }));
                 });
             } else if (modalMode.type === 'class') {
-                initialProject.modules.forEach(mod => {
+                initialProject.structure.modules.forEach(mod => {
                     mod.packages.forEach(pkg => {
                         const cls = pkg.classes.find(c => c.id === modalMode.editId);
                         if (cls) {
@@ -128,7 +141,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
             setCurrentMethod({ name: '', returnType: 'void', tempParameters: [] });
             setCurrentParameter({ name: '', type: 'String' });
         }
-    }, [modalMode, initialProject.modules]);
+    }, [modalMode, initialProject.structure.modules]);
 
     const addAttribute = () => {
         if (currentAttribute.name.trim()) {
@@ -179,15 +192,15 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
         const newProject = structuredClone(initialProject) as ProjectModel;
         if (modalMode.editMode && modalMode.editId) {
             if (modalMode.type === 'module') {
-                const mod = newProject.modules.find(m => m.id === modalMode.editId);
+                const mod = newProject.structure.modules.find(m => m.id === modalMode.editId);
                 if (mod) mod.name = formData.name;
             } else if (modalMode.type === 'package') {
-                newProject.modules.forEach(mod => {
+                newProject.structure.modules.forEach(mod => {
                     const pkg = mod.packages.find(p => p.id === modalMode.editId);
                     if (pkg) pkg.name = formData.name;
                 });
             } else if (modalMode.type === 'class') {
-                newProject.modules.forEach(mod => {
+                newProject.structure.modules.forEach(mod => {
                     mod.packages.forEach(pkg => {
                         const cls = pkg.classes.find(c => c.id === modalMode.editId);
                         if (cls) {
@@ -207,14 +220,14 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
         } else {
             const newId = `${modalMode.type.charAt(0)}${Date.now()}`;
             if (modalMode.type === 'module') {
-                newProject.modules.push({ id: newId, name: formData.name, packages: [] });
+                newProject.structure.modules.push({ id: newId, name: formData.name, packages: [] });
             } else if (modalMode.type === 'package') {
-                const mod = newProject.modules.find(m => m.id === modalMode.parentId);
+                const mod = newProject.structure.modules.find(m => m.id === modalMode.parentId);
                 if (mod) {
                     mod.packages.push({ id: newId, name: formData.name, classes: [] });
                 }
             } else if (modalMode.type === 'class') {
-                newProject.modules.forEach(mod => {
+                newProject.structure.modules.forEach(mod => {
                     const pkg = mod.packages.find(p => p.id === modalMode.parentId);
                     if (pkg) {
                         pkg.classes.push({

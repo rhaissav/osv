@@ -130,4 +130,21 @@ export class ProjectController {
     await service.addMemberByEmail(id, email);
     return reply.code(201).send({ message: 'Membro adicionado ao projeto.' });
   }
+
+  async removeMember(request: FastifyRequest, reply: FastifyReply) {
+    const { id, userId } = request.params as any;
+
+    console.log(id, userId)
+    // @ts-ignore
+    const currentUserId = request.user.sub;
+    const role = await service.getUserRole(id, currentUserId);
+    if (role !== 'OWNER') {
+      return reply.code(403).send({ error: 'Apenas o proprietário pode remover membros.' });
+    }
+    if (userId === currentUserId) {
+      return reply.code(400).send({ error: 'O proprietário não pode remover a si mesmo.' });
+    }
+    await service.removeMember(id, userId);
+    return reply.code(204).send();
+  }
 }

@@ -58,9 +58,23 @@ interface ProjectStructure {
 
 
 type UserRole = 'OWNER' | 'MEMBER';
-interface ProjectModel extends ProjectStructure {
-    status: 'development' | 'concluded';
+interface Member {
+    id: string;
+    name?: string;
+    email: string;
+    role: 'OWNER' | 'MEMBER';
+}
+
+interface ProjectModel {
+    id?: string;
+    title: string;
+    description?: string;
+    createdAt?: string;
     updatedAt?: string;
+    structure: ProjectStructure;
+    status: 'EM_ANDAMENTO' | 'CONCLUIDO';
+    role?: 'OWNER' | 'MEMBER';
+    members?: Member[];
 }
 
 
@@ -91,18 +105,24 @@ const OOSetModelingTool = () => {
         const { type, entityId } = entityModal;
         const newProject = structuredClone(project) as ProjectModel;
         if (type === 'module') {
-            newProject.modules = newProject.modules.filter(m => m.id !== entityId);
+            newProject.structure.modules = newProject.structure.modules.filter(m => m.id !== entityId);
+            const removedModule = project.structure.modules.find(m => m.id === entityId);
+            const removedClassIds = removedModule ? removedModule.packages.flatMap(pkg => pkg.classes.map(c => c.id)) : [];
+            newProject.structure.relations = newProject.structure.relations.filter(r => !removedClassIds.includes(r.from) && !removedClassIds.includes(r.to));
         } else if (type === 'package') {
-            newProject.modules.forEach(mod => {
+            newProject.structure.modules.forEach(mod => {
                 mod.packages = mod.packages.filter(p => p.id !== entityId);
             });
+            const removedPackage = project.structure.modules.flatMap(mod => mod.packages).find(p => p.id === entityId);
+            const removedClassIds = removedPackage ? removedPackage.classes.map(c => c.id) : [];
+            newProject.structure.relations = newProject.structure.relations.filter(r => !removedClassIds.includes(r.from) && !removedClassIds.includes(r.to));
         } else if (type === 'class') {
-            newProject.modules.forEach(mod => {
+            newProject.structure.modules.forEach(mod => {
                 mod.packages.forEach(pkg => {
                     pkg.classes = pkg.classes.filter(c => c.id !== entityId);
                 });
             });
-            newProject.relations = newProject.relations.filter(r => r.from !== entityId && r.to !== entityId);
+            newProject.structure.relations = newProject.structure.relations.filter(r => r.from !== entityId && r.to !== entityId);
         }
         setProject(newProject);
         closeEntityModal();
@@ -127,12 +147,16 @@ const OOSetModelingTool = () => {
         editId: null
     });
 
-    // Novos estados para integração
     const [project, setProject] = useState<ProjectModel>({
-        name: '',
-        status: 'development',
-        modules: [],
-        relations: [],
+        title: '',
+        description: '',
+        status: 'EM_ANDAMENTO',
+        structure: {
+            name: '',
+            modules: [],
+            relations: [],
+        },
+        members: [],
     });
     const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
     const [projectId, setProjectId] = useState<string | null>(null);
@@ -155,20 +179,24 @@ const OOSetModelingTool = () => {
             getProject(id)
                 .then((data) => {
                     setProjectId(data.id);
-                    setTitle(data.title || data.name || '');
+                    setTitle(data.title || '');
                     setDescription(data.description || '');
-                    let status: 'development' | 'concluded' = 'development';
-                    if (data.status === 'CONCLUIDO') status = 'concluded';
-                    if (data.status === 'EM_ANDAMENTO') status = 'development';
-                    const structure = data.structure || data;
-                    setProject({
-                        name: structure.name || data.title || '',
-                        status,
-                        modules: structure.modules || [],
-                        relations: structure.relations || [],
-                        updatedAt: data.updatedAt,
-                    });
                     setUserRole(data.role as UserRole || undefined);
+                    setProject({
+                        id: data.id,
+                        title: data.title || '',
+                        description: data.description || '',
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        status: data.status,
+                        structure: data.structure || {
+                            name: '',
+                            modules: [],
+                            relations: [],
+                        },
+                        role: data.role,
+                        members: data.members || [],
+                    });
                 })
                 .catch(() => setError('Erro ao carregar projeto'))
                 .finally(() => setLoading(false));
@@ -176,7 +204,7 @@ const OOSetModelingTool = () => {
     }, [id]);
 
 
-    const allClasses = (project.modules ?? []).flatMap(mod =>
+    const allClasses = (project.structure.modules ?? []).flatMap(mod =>
         (mod.packages ?? []).flatMap(pkg =>
             (pkg.classes ?? []).map(cls => ({
                 id: cls.id,
@@ -199,7 +227,7 @@ const OOSetModelingTool = () => {
     const closeModal = () => setShowModal(false);
 
 
-    const filteredModules = project.modules.filter(mod => {
+    const filteredModules = project.structure.modules.filter(mod => {
         if (!searchTerm.trim()) return true;
         const low = searchTerm.toLowerCase();
         if (mod.name.toLowerCase().includes(low)) return true;
@@ -299,21 +327,20 @@ const OOSetModelingTool = () => {
                 setLoading(false);
                 return;
             }
-            const backendStatus = project.status === 'development' ? 'EM_ANDAMENTO' : 'CONCLUIDO';
             const structure: ProjectStructure = {
-                name: project.name,
-                modules: project.modules,
-                relations: project.relations
+                name: project.structure.name,
+                modules: project.structure.modules,
+                relations: project.structure.relations
             };
             if (!projectId) {
                 // Criação
-                const res = await createProject({ title, description, status: backendStatus, structure });
+                const res = await createProject({ title, description, status: 'EM_ANDAMENTO', structure });
                 setProjectId(res.id);
                 setShowToast(true);
                 setTimeout(() => setShowToast(false), 2500);
             } else {
                 // Atualização
-                const res = await updateProject({ id: projectId, title, description, status: backendStatus, structure });
+                const res = await updateProject({ id: projectId, title, description, status: project.status, structure });
                 setProject(prev => ({ ...prev, updatedAt: res.updatedAt }));
                 setShowToast(true);
                 setTimeout(() => setShowToast(false), 2500);
@@ -555,8 +582,8 @@ const OOSetModelingTool = () => {
                     allClasses={allClasses}
                     onClose={() => setShowRelationModal(false)}
                     onUpdate={(newProject: any) => {
-                        if (newProject && typeof newProject === 'object' && 'modules' in newProject) {
-                            setProject((prev) => ({ ...prev, ...newProject }));
+                        if (newProject && typeof newProject === 'object' && 'structure' in newProject) {
+                            setProject((prev) => ({ ...prev, structure: newProject.structure }));
                         }
                     }}
                 />

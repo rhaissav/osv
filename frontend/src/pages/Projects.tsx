@@ -7,7 +7,7 @@ import { FaPlus, FaEdit, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons
 
 interface Project {
     id: string;
-    name: string;
+    title: string;
     description?: string;
     role?: 'OWNER' | 'MEMBER';
     status?: string;
@@ -38,12 +38,8 @@ export default function Projects() {
         api.get('/projects')
             .then(res => {
                 console.log('Projetos recebidos:', res.data);
-                const adapt = (p: any) => ({
-                    ...p,
-                    name: p.name || p.title,
-                });
-                setMeusProjetos(Array.isArray(res.data?.meusProjetos) ? res.data.meusProjetos.map(adapt) : []);
-                setColaboradorProjetos(Array.isArray(res.data?.colaboradorProjetos) ? res.data.colaboradorProjetos.map(adapt) : []);
+                setMeusProjetos(Array.isArray(res.data?.meusProjetos) ? res.data.meusProjetos : []);
+                setColaboradorProjetos(Array.isArray(res.data?.colaboradorProjetos) ? res.data.colaboradorProjetos : []);
             })
             .catch(() => setError('Erro ao carregar projetos'))
             .finally(() => setLoading(false));
@@ -67,10 +63,8 @@ export default function Projects() {
 
     const projetosAtuais = tab === 'meus' ? meusProjetos : colaboradorProjetos;
     const filtered = projetosAtuais.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.title.toLowerCase().includes(search.toLowerCase())
     );
-
-    const userId = localStorage.getItem('userId');
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-10 px-2 md:px-8">
@@ -129,7 +123,7 @@ export default function Projects() {
                                             <tr key={project.id} className="border-b hover:bg-blue-50/50">
                                                 <td className="px-4 py-2 font-medium flex items-center gap-2">
                                                     <Link to={`/projects/${project.id}`} className="text-blue-700 hover:underline">
-                                                        {project.name}
+                                                        {project.title}
                                                     </Link>
                                                 </td>
                                                 <td className="px-4 py-2 text-gray-600">{project.description || 'Sem descrição'}</td>
@@ -158,7 +152,7 @@ export default function Projects() {
                                                         open={modalOpen}
                                                         onConfirm={handleDeleteProject}
                                                         onCancel={() => { setModalOpen(false); setProjectToDelete(null); }}
-                                                        projectName={projectToDelete?.name || ''}
+                                                        projectName={projectToDelete?.title || ''}
                                                     />
                                                     {deleteSuccess && (
                                                         <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50">
@@ -181,18 +175,35 @@ export default function Projects() {
                                                     <td colSpan={5} className="bg-blue-50/50 px-6 py-3">
                                                         <div className="flex flex-col gap-1">
                                                             <div className="flex font-semibold text-xs text-gray-700 mb-1">
-                                                                <div className="w-1/3">Usuário</div>
-                                                                <div className="w-1/3">Email</div>
-                                                                <div className="w-1/3">Categoria</div>
+                                                                <div className={project.role === 'OWNER' ? 'w-1/4' : 'w-1/3'}>Usuário</div>
+                                                                <div className={project.role === 'OWNER' ? 'w-1/4' : 'w-1/3'}>Email</div>
+                                                                <div className={project.role === 'OWNER' ? 'w-1/4' : 'w-1/3'}>Categoria</div>
+                                                                {project.role === 'OWNER' && <div className="w-1/4">Ação</div>}
                                                             </div>
                                                             {(project.members as Member[]).map((m) => {
                                                                 return (
-                                                                    <div key={m.id} className="flex items-center text-xs py-1 border-b last:border-b-0">
-                                                                        <div className="w-1/3 font-medium">{m.name || '(sem nome)'}</div>
-                                                                        <div className="w-1/3 text-gray-600">{m.email}</div>
-                                                                        <div className="w-1/3">
+                                                                    <div key={m.id} className={`flex items-center text-xs py-1 border-b last:border-b-0 ${project.role === 'OWNER' ? '' : ''}`}>
+                                                                        <div className={project.role === 'OWNER' ? 'w-1/4 font-medium' : 'w-1/3 font-medium'}>{m.name || '(sem nome)'}</div>
+                                                                        <div className={project.role === 'OWNER' ? 'w-1/4 text-gray-600' : 'w-1/3 text-gray-600'}>{m.email}</div>
+                                                                        <div className={project.role === 'OWNER' ? 'w-1/4' : 'w-1/3'}>
                                                                             <span className={`px-2 py-0.5 rounded text-xs font-bold ${m.role === 'OWNER' ? 'bg-orange-500 text-white' : 'bg-blue-600 text-white'}`}>{m.role === 'OWNER' ? 'Proprietário' : 'Colaborador'}</span>
                                                                         </div>
+                                                                        {project.role === 'OWNER' && (
+                                                                            <div className="w-1/4">
+                                                                                {m.role !== 'OWNER' && (
+                                                                                    <button
+                                                                                        className="p-1 rounded text-orange-600 hover:bg-orange-100 transition"
+                                                                                        title="Remover colaborador"
+                                                                                        onClick={() => {
+                                                                                            setCollabToRemove({ project, member: m });
+                                                                                            setCollabModalOpen(true);
+                                                                                        }}
+                                                                                    >
+                                                                                        <FaTrash />
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 );
                                                             })}
