@@ -32,6 +32,8 @@ export default function Projects() {
     const [tab, setTab] = useState<'meus' | 'colaborador'>('meus');
     const [search, setSearch] = useState('');
     const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
+    const [setCollabModalOpen] = useState(false);
+    const [setCollabToRemove] = useState<{ project: Project; member: Member } | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
