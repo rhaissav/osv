@@ -23,7 +23,7 @@ const ProjectPrintView = () => {
     // Adapta o objeto para o formato esperado pelo SetTheoryView
     const projectForSetTheory: any = {
         ...project,
-        status: project.status === 'CONCLUIDO' ? 'concluded' : 'development',
+        status: project.status === 'EM_ANDAMENTO' ? 'EM_ANDAMENTO' : 'CONCLUIDO',
         modules: project.structure?.modules || [],
         relations: project.structure?.relations || [],
         name: project.title || project.name || '',
