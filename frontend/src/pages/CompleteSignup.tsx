@@ -58,8 +58,8 @@ export default function CompleteSignup() {
                     <label className="block text-sm font-medium mb-1">Confirmar Senha</label>
                     <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100" />
                 </div>
-                {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-                {success && <div className="text-green-600 text-sm mb-2">{success}</div>}
+                {error && <div className="text-red-600 dark:text-red-400 text-sm mb-2">{error}</div>}
+                {success && <div className="text-green-600 dark:text-green-400 text-sm mb-2">{success}</div>}
                 <Button type="submit" className="w-full" disabled={loading}>{loading ? 'Enviando...' : 'Completar Cadastro'}</Button>
             </form>
         </div>

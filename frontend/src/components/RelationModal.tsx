@@ -86,9 +86,42 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
     const [toClass, setToClass] = useState('');
 
     const dynamicColorClasses = {
-        blue: { bg: 'bg-blue-600', hoverBg: 'hover:bg-blue-700', text: 'text-blue-600', bg50: 'bg-blue-50', border: 'border-blue-500', text700: 'text-blue-700', border200: 'border-blue-200', bg100: 'bg-blue-100' },
-        emerald: { bg: 'bg-emerald-600', hoverBg: 'hover:bg-emerald-700', text: 'text-emerald-600', bg50: 'bg-emerald-50', border: 'border-emerald-500', text700: 'text-emerald-700', border200: 'border-emerald-200', bg100: 'bg-emerald-100' },
-        orange: { bg: 'bg-orange-600', hoverBg: 'hover:bg-orange-700', text: 'text-orange-600', bg50: 'bg-orange-50', border: 'border-orange-500', text700: 'text-orange-700', border200: 'border-orange-200', bg100: 'bg-orange-100' },
+        blue: {
+            bg: 'bg-blue-600',
+            hoverBg: 'hover:bg-blue-700',
+            text: 'text-blue-600',
+            bg50: 'bg-blue-50',
+            border: 'border-blue-500',
+            text700: 'text-blue-700',
+            border200: 'border-blue-200',
+            bg100: 'bg-blue-100',
+            darkBg: 'dark:bg-blue-900/20',
+            darkText: 'dark:text-blue-300',
+        },
+        emerald: {
+            bg: 'bg-emerald-600',
+            hoverBg: 'hover:bg-emerald-700',
+            text: 'text-emerald-600',
+            bg50: 'bg-emerald-50',
+            border: 'border-emerald-500',
+            text700: 'text-emerald-700',
+            border200: 'border-emerald-200',
+            bg100: 'bg-emerald-100',
+            darkBg: 'dark:bg-emerald-900/20',
+            darkText: 'dark:text-emerald-300',
+        },
+        orange: {
+            bg: 'bg-orange-600',
+            hoverBg: 'hover:bg-orange-700',
+            text: 'text-orange-600',
+            bg50: 'bg-orange-50',
+            border: 'border-orange-500',
+            text700: 'text-orange-700',
+            border200: 'border-orange-200',
+            bg100: 'bg-orange-100',
+            darkBg: 'dark:bg-orange-900/20',
+            darkText: 'dark:text-orange-300',
+        },
     };
 
     const handleAddRelation = () => {
@@ -130,8 +163,8 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
                             Gerenciar Relações entre Classes
                         </h3>
                     </div>
-                    <div className={`rounded-xl border-l-4 ${colorSet.border} ${colorSet.bg50} dark:bg-${meta.color}-900/20 p-5`}>
-                        <h4 className={`font-semibold ${colorSet.text700} dark:text-${meta.color}-300 mb-1`}>
+                    <div className={`rounded-xl border-l-4 ${colorSet.border} ${colorSet.bg50} ${colorSet.darkBg} p-5`}> {/* darkBg dinâmico */}
+                        <h4 className={`font-semibold ${colorSet.text700} ${colorSet.darkText} mb-1`}>
                             {meta.title}
                         </h4>
                         <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-2">{meta.desc}</p>
@@ -200,9 +233,9 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
                                     const fromName = From?.name.replace(/\s/g, '_') ?? '?';
                                     const toName = To?.name.replace(/\s/g, '_') ?? '?';
                                     return (
-                                        <div key={rel.id} className={`flex items-center justify-between px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 ${dynamicClasses.bg50} dark:bg-${config.color}-900/20`}>
+                                        <div key={rel.id} className={`flex items-center justify-between px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 ${dynamicClasses.bg50} ${dynamicClasses.darkBg}`}>
                                             <div className="font-mono text-sm text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
-                                                <span className={`font-semibold ${dynamicClasses.text}`}>
+                                                <span className={`font-semibold ${dynamicClasses.text} ${dynamicClasses.darkText}`}>
                                                     {rel.label}
                                                 </span>
                                                 <span className="text-neutral-600 dark:text-neutral-400 ml-2">
@@ -213,7 +246,7 @@ const RelationModal: React.FC<RelationModalProps> = ({ project, onClose, onUpdat
                                             </div>
                                             <button
                                                 onClick={() => deleteRelation(rel.id)}
-                                                className="text-orange-500 hover:text-orange-600 transition"
+                                                className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 transition"
                                             >
                                                 <Trash2 size={14} />
                                             </button>

@@ -100,14 +100,14 @@ const ClassForm: React.FC<Props> = ({ allPkgs, onAdd }) => {
     }
 
     return (
-        <div className="border rounded p-4 mb-4">
-            <div className="font-semibold mb-2">Classe ou Interface</div>
+        <div className="border rounded p-4 mb-4 bg-white dark:bg-neutral-800">
+            <div className="font-semibold mb-2 text-gray-900 dark:text-neutral-100">Classe ou Interface</div>
             <Select
                 value={pkg}
                 onChange={e => setPkg(e.target.value)}
                 options={[{ value: '', label: 'Selecione o pacote' }, ...allPkgs.map((p) => ({ value: p.name, label: p.name }))]}
             />
-            <input className="border rounded px-2 py-1 w-full mb-1" placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
+            <input className="border rounded px-2 py-1 w-full mb-1 bg-white dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-600" placeholder="Nome" value={name} onChange={e => setName(e.target.value)} />
             <Select
                 value={type}
                 onChange={e => setType(e.target.value as 'concreta' | 'abstrata' | 'interface')}
@@ -130,7 +130,7 @@ const ClassForm: React.FC<Props> = ({ allPkgs, onAdd }) => {
                                 options={visibilityOptions}
                                 className="w-24"
                             />
-                            <input className="border rounded px-2 py-1 flex-1" placeholder="nome" value={attr.name} onChange={e => handleAttributeChange(idx, 'name', e.target.value)} />
+                            <input className="border rounded px-2 py-1 flex-1 bg-white dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-600" placeholder="nome" value={attr.name} onChange={e => handleAttributeChange(idx, 'name', e.target.value)} />
                             <Select
                                 value={attr.type}
                                 onChange={e => handleAttributeChange(idx, 'type', e.target.value)}
@@ -164,10 +164,10 @@ const ClassForm: React.FC<Props> = ({ allPkgs, onAdd }) => {
                             <button type="button" className="text-red-500" onClick={() => handleRemoveMethod(mIdx)} title="Remover">🗑️</button>
                         </div>
                         <div className="ml-6">
-                            <div className="text-sm text-gray-600 mb-1">Parâmetros <button type="button" className="ml-2 text-blue-600 text-xs" onClick={() => handleAddParam(mIdx)}>+ Adicionar Parâmetro</button></div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Parâmetros <button type="button" className="ml-2 text-blue-600 dark:text-blue-400 text-xs" onClick={() => handleAddParam(mIdx)}>+ Adicionar Parâmetro</button></div>
                             {meth.params.map((param, pIdx) => (
                                 <div key={pIdx} className="flex items-center gap-2 mb-1">
-                                    <input className="border rounded px-2 py-1 flex-1" placeholder="nome" value={param.name} onChange={e => handleParamChange(mIdx, pIdx, 'name', e.target.value)} />
+                                    <input className="border rounded px-2 py-1 flex-1 bg-white dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-600" placeholder="nome" value={param.name} onChange={e => handleParamChange(mIdx, pIdx, 'name', e.target.value)} />
                                     <Select
                                         value={param.type}
                                         onChange={e => handleParamChange(mIdx, pIdx, 'type', e.target.value)}
@@ -182,8 +182,8 @@ const ClassForm: React.FC<Props> = ({ allPkgs, onAdd }) => {
                 ))}
             </div>
 
-            <button type="button" className="w-full bg-blue-600 text-white rounded py-2 mt-2" onClick={handleAdd}>Adicionar</button>
-            {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
+            <button type="button" className="w-full bg-blue-600 text-white rounded py-2 mt-2 dark:bg-blue-800 dark:text-white" onClick={handleAdd}>Adicionar</button>
+            {error && <div className="text-red-600 dark:text-red-400 text-sm mt-1">{error}</div>}
         </div>
     );
 };

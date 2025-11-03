@@ -43,16 +43,16 @@ export default function Sidebar({ onExpand }: SidebarProps) {
 
     return (
         <aside
-            className={`fixed top-0 left-0 h-screen flex flex-col justify-between bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ${expanded ? 'w-60' : 'w-20'} group z-30`}
+            className={`fixed top-0 left-0 h-screen flex flex-col justify-between bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-700 shadow-lg transition-all duration-300 ${expanded ? 'w-60' : 'w-20'} group z-30`}
             onMouseEnter={() => setExpanded(true)}
             onMouseLeave={() => setExpanded(false)}
         >
             <div>
                 <div className="flex items-center justify-center py-8 select-none">
                     {expanded ? (
-                        <span className="text-xl font-bold text-blue-600 text-center leading-tight transition-all duration-300">Object Set Visualizer</span>
+                        <span className="text-xl font-bold text-blue-600 dark:text-blue-300 text-center leading-tight transition-all duration-300">Object Set Visualizer</span>
                     ) : (
-                        <span className="text-2xl font-bold text-blue-600 transition-all duration-300">OSV</span>
+                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-300 transition-all duration-300">OSV</span>
                     )}
                 </div>
                 <nav className="flex flex-col gap-3 px-2">
@@ -61,10 +61,10 @@ export default function Sidebar({ onExpand }: SidebarProps) {
                             key={item.label}
                             to={item.to}
                             tabIndex={0}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-150 ${item.color} hover:scale-[1.03] active:scale-[0.98] shadow-sm`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-150 ${item.color} hover:scale-[1.03] active:scale-[0.98] shadow-sm dark:shadow-none`}
                         >
                             <span className="text-xl text-white">{item.icon}</span>
-                            {expanded && <span className="text-base text-white font-semibold">{item.label}</span>}
+                            {expanded && <span className="text-base text-white dark:text-neutral-100 font-semibold">{item.label}</span>}
                         </Link>
                     ))}
                 </nav>
@@ -73,10 +73,10 @@ export default function Sidebar({ onExpand }: SidebarProps) {
                 {expanded && (
                     <div className="mb-4 flex flex-col items-start animate-fade-in">
                         <div className="flex items-center gap-2 mb-1">
-                            <FaUser className="text-gray-500" />
-                            <span className="font-semibold text-gray-700">{user.name}</span>
+                            <FaUser className="text-gray-500 dark:text-neutral-400" />
+                            <span className="font-semibold text-gray-700 dark:text-neutral-300">{user.name}</span>
                         </div>
-                        <span className="text-xs text-gray-400">{user.email}</span>
+                        <span className="text-xs text-gray-400 dark:text-neutral-400">{user.email}</span>
                     </div>
                 )}
                 <Button

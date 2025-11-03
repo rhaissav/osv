@@ -251,7 +251,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
     };
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 pb-2 mb-4">
+            <div className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-700 pb-2 mb-4">
                 {modalMode.editMode ? 'Editar' : 'Novo'}{' '}
                 {modalMode.type === 'module' && 'Módulo'}
                 {modalMode.type === 'package' && `Pacote${modalMode.editMode ? '' : ` em ${modalMode.parentName}`}`}
@@ -266,10 +266,11 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                                 key={type.value}
                                 type="button"
                                 onClick={() => setFormData(prev => ({ ...prev, classType: type.value as 'concrete' | 'abstract' | 'interface' }))}
-                                className={`flex-1 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${formData.classType === type.value
-                                    ? `border-${type.color}-600 bg-${type.color}-50 text-${type.color}-700`
-                                    : 'border-neutral-300 bg-white dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400'
-                                    }`}
+                                className={`flex-1 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors
+                                    ${formData.classType === type.value
+                                        ? `border-${type.color}-600 bg-${type.color}-50 dark:bg-${type.color}-900/20 text-${type.color}-700 dark:text-${type.color}-300`
+                                        : 'border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500'}
+                                `}
                             >
                                 {type.label}
                             </button>
@@ -293,7 +294,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Atributos</label>
                         {formData.attributes.length > 0 && (
-                            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-600">
+                            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-700">
                                 {formData.attributes.map((attr, index) => (
                                     <div key={index} className="flex items-center justify-between px-4 py-2">
                                         <span className="font-mono text-sm text-neutral-800 dark:text-neutral-100">
@@ -340,7 +341,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Métodos</label>
                         {formData.methods.length > 0 && (
-                            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-600">
+                            <div className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-700">
                                 {formData.methods.map((meth, index) => (
                                     <div key={index} className="flex items-center justify-between px-4 py-2">
                                         <span className="font-mono text-sm text-neutral-800 dark:text-neutral-100">
@@ -359,7 +360,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                                 ))}
                             </div>
                         )}
-                        <div className="space-y-3 p-3 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+                        <div className="space-y-3 p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 rounded-lg">
                             <div className='flex gap-2'>
                                 <input
                                     type="text"
@@ -382,7 +383,7 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                                 {currentMethod.tempParameters.length > 0 && (
                                     <div className="mb-2 space-y-1 max-h-24 overflow-y-auto pr-1">
                                         {currentMethod.tempParameters.map((p, index) => (
-                                            <div key={index} className="flex items-center justify-between px-3 py-1 bg-neutral-100 dark:bg-neutral-700 rounded-md">
+                                            <div key={index} className="flex items-center justify-between px-3 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-md">
                                                 <span className="font-mono text-xs text-neutral-800 dark:text-neutral-100">
                                                     {p.name}: <span className="text-blue-600 dark:text-blue-400">{p.type}</span>
                                                 </span>
@@ -439,13 +440,13 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                 <button
                     type="button"
                     onClick={onClose}
-                    className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 transition font-medium text-sm"
+                    className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition font-medium text-sm"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 transition font-medium text-sm disabled:opacity-50"
                     disabled={!formData.name.trim()}
                 >
                     {modalMode.editMode ? 'Salvar Alterações' : 'Criar'}

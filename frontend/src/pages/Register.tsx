@@ -66,7 +66,7 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-neutral-900 dark:to-neutral-800 dark:bg-gradient-to-br">
             <Header />
             <div className="pt-16 flex flex-col md:flex-row items-center justify-center min-h-[80vh] w-full">
                 <div className="flex w-full md:w-1/2 items-center justify-center p-6 md:p-0 h-56 md:h-auto">
@@ -80,8 +80,8 @@ export default function Register() {
                     onSubmit={handleSubmit}
                     className="w-full md:w-1/2 p-6 sm:p-10 flex flex-col justify-center"
                 >
-                    <h2 className="text-3xl font-bold mb-2 text-center text-gray-800">Criar conta</h2>
-                    <p className="text-center text-gray-500 mb-6">Junte-se a nós e comece a visualizar seus dados</p>
+                    <h2 className="text-3xl font-bold mb-2 text-center text-gray-800 dark:text-neutral-100">Criar conta</h2>
+                    <p className="text-center text-gray-500 dark:text-neutral-300 mb-6">Junte-se a nós e comece a visualizar seus dados</p>
 
                     <ErrorMessage message={error} />
 
@@ -129,9 +129,9 @@ export default function Register() {
                         {isLoading ? 'Criando conta...' : 'Criar conta'}
                     </Button>
 
-                    <div className="mt-4 text-center text-sm text-gray-600">
+                    <div className="mt-4 text-center text-sm text-gray-600 dark:text-neutral-300">
                         Já tem uma conta?{' '}
-                        <Link to="/login" className="text-blue-600 hover:underline font-medium">
+                        <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
                             Faça login
                         </Link>
                     </div>

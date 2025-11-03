@@ -293,7 +293,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                         <div key={cls.id || cls.name} className="p-5 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-3">
                             <div className="flex items-center gap-2 font-mono border-b border-neutral-100 dark:border-neutral-600 pb-2 mb-2">
                                 <span className="text-neutral-600 dark:text-neutral-400 font-semibold text-xl">{cls.name.replace(/\s/g, '_')} = <span className="text-neutral-600 dark:text-neutral-400">{'{ '}D, F{' }'}</span></span>
-                                <span className={`text-xs ml-auto px-2 py-0.5 rounded-full border font-normal bg-${classTypeMeta[cls.type].color}-100 border-${classTypeMeta[cls.type].color}-300 text-${classTypeMeta[cls.type].color}-700 dark:bg-${classTypeMeta[cls.type].color}-700 dark:border-${classTypeMeta[cls.type].color}-600 dark:text-${classTypeMeta[cls.type].color}-200`}>
+                                <span className={`text-xs ml-auto px-2 py-0.5 rounded-full border font-normal bg-${classTypeMeta[cls.type].color}-100 border-${classTypeMeta[cls.type].color}-300 text-${classTypeMeta[cls.type].color}-700 dark:bg-${classTypeMeta[cls.type].color}-700 dark:border-${classTypeMeta[cls.type].color}-600 dark:text-white`}>
                                     {classTypeMeta[cls.type].label}
                                 </span>
                             </div>

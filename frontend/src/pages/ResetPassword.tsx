@@ -36,20 +36,20 @@ const ResetPassword: React.FC = () => {
     };
 
     if (!token) {
-        return <div className="min-h-screen flex items-center justify-center text-red-600 font-semibold">Token inválido ou ausente.</div>;
+        return <div className="min-h-screen flex items-center justify-center text-red-600 dark:text-red-400 font-semibold">Token inválido ou ausente.</div>;
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-md w-full max-w-md flex flex-col gap-4 border border-neutral-200">
-                <h2 className="text-2xl font-bold mb-2 text-center text-neutral-900">Redefinir Senha</h2>
-                {error && <div className="text-red-600 text-sm text-center">{error}</div>}
-                {success && <div className="text-green-600 text-sm text-center">Senha redefinida com sucesso! Redirecionando...</div>}
+        <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-neutral-800 p-8 rounded-xl shadow-md w-full max-w-md flex flex-col gap-4 border border-neutral-200 dark:border-neutral-700">
+                <h2 className="text-2xl font-bold mb-2 text-center text-neutral-900 dark:text-neutral-100">Redefinir Senha</h2>
+                {error && <div className="text-red-600 dark:text-red-400 text-sm text-center">{error}</div>}
+                {success && <div className="text-green-600 dark:text-green-400 text-sm text-center">Senha redefinida com sucesso! Redirecionando...</div>}
                 <label className="block">
-                    <span className="text-sm font-medium">Nova senha</span>
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Nova senha</span>
                     <input
                         type="password"
-                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 mt-1"
+                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 mt-1 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         minLength={6}
@@ -58,10 +58,10 @@ const ResetPassword: React.FC = () => {
                     />
                 </label>
                 <label className="block">
-                    <span className="text-sm font-medium">Confirmar nova senha</span>
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Confirmar nova senha</span>
                     <input
                         type="password"
-                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 mt-1"
+                        className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 mt-1 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100"
                         value={confirm}
                         onChange={e => setConfirm(e.target.value)}
                         minLength={6}
@@ -70,7 +70,7 @@ const ResetPassword: React.FC = () => {
                 </label>
                 <button
                     type="submit"
-                    className="w-full py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition mt-2"
+                    className="w-full py-2 rounded-lg bg-emerald-600 dark:bg-emerald-700 text-white font-semibold hover:bg-emerald-700 dark:hover:bg-emerald-600 transition mt-2"
                     disabled={loading}
                 >
                     {loading ? 'Redefinindo...' : 'Redefinir Senha'}
