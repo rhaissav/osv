@@ -74,6 +74,7 @@ interface ProjectModel {
         name: string;
         modules: ModuleModel[];
         relations: RelationModel[];
+        objects?: number;
     };
     status: 'EM_ANDAMENTO' | 'CONCLUIDO';
     role?: 'OWNER' | 'MEMBER';
@@ -114,6 +115,31 @@ interface SetTheoryViewProps {
 }
 
 const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
+    const [objects, setObjects] = React.useState<number>(
+        typeof project.structure.objects === 'number' ? project.structure.objects : 0
+    );
+    const [editingObjects, setEditingObjects] = React.useState(false);
+    const [editValue, setEditValue] = React.useState(objects);
+
+    React.useEffect(() => {
+        setObjects(typeof project.structure.objects === 'number' ? project.structure.objects : 0);
+    }, [project.structure.objects]);
+
+    const handleEditClick = () => {
+        setEditValue(objects);
+        setEditingObjects(true);
+    };
+    const handleEditSave = () => {
+        setObjects(editValue);
+        setEditingObjects(false);
+        const newProject = structuredClone(project);
+        newProject.structure.objects = editValue;
+        onUpdate(newProject);
+    };
+    const handleEditCancel = () => {
+        setEditingObjects(false);
+    };
+
     const allClasses = (project.structure?.modules ?? []).flatMap(m =>
         (m.packages ?? []).flatMap(p =>
             (p.classes ?? [])
@@ -174,15 +200,15 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                         </span>
                     </div>
                 </div>
+                <h3 className="col-span-2 sm:col-span-3 md:col-span-6 text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Visão Estática</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {[
-                        { label: 'Módulos (M)', value: (project.structure?.modules ?? []).length, color: 'blue' },
-                        { label: 'Pacotes (P)', value: (project.structure?.modules ?? []).reduce((a: number, m: ModuleModel) => a + ((m.packages ?? []).length), 0), color: 'purple' },
-                        { label: 'Classes (C)', value: allClasses.length, color: 'emerald' },
+                        { label: 'Módulos (M)', value: (project.structure?.modules ?? []).length },
+                        { label: 'Pacotes (P)', value: (project.structure?.modules ?? []).reduce((a: number, m: ModuleModel) => a + ((m.packages ?? []).length), 0) },
+                        { label: 'Classes (C)', value: allClasses.length },
                         ...RelationTypesForView.map(stat => ({
                             label: stat.label,
                             value: relationCounts[stat.value] || 0,
-                            color: stat.color,
                         }))
                     ].map((stat) => (
                         <div
@@ -198,6 +224,36 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                         </div>
                     ))}
                 </div>
+                {/* Visão Dinâmica */}
+                <h3 className="col-span-2 sm:col-span-3 md:col-span-6 text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6 mt-10">Visão Dinâmica</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                    <div className="flex flex-col items-center justify-center gap-1 p-3 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 col-span-2 sm:col-span-3 md:col-span-6">
+                        {editingObjects ? (
+                            <div className="flex flex-row items-center gap-2">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={editValue}
+                                    onChange={e => setEditValue(parseInt(e.target.value) || 0)}
+                                    className="w-20 text-center py-1 px-2 rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+                                />
+                                <button onClick={handleEditSave} className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700">Salvar</button>
+                                <button onClick={handleEditCancel} className="px-3 py-1 rounded bg-neutral-300 text-neutral-700 text-xs font-semibold hover:bg-neutral-400">Cancelar</button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-row items-center gap-2">
+                                <div className="w-20 text-center py-1 px-2 rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                                    {typeof objects === 'number' ? objects : 0}
+                                </div>
+                                <button onClick={handleEditClick} className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700">Editar</button>
+                            </div>
+                        )}
+                        <div className="text-xs font-medium text-neutral-600 dark:text-neutral-400 text-center leading-tight mt-1">
+                            Objetos (O)
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <Section title="Módulos">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

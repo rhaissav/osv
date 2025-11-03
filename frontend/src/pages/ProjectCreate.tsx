@@ -54,6 +54,7 @@ interface ProjectStructure {
     name: string;
     modules: ModuleModel[];
     relations: RelationModel[];
+    objects?: number;
 }
 
 
@@ -193,6 +194,7 @@ const OOSetModelingTool = () => {
                             name: '',
                             modules: [],
                             relations: [],
+                            objects: 0
                         },
                         role: data.role,
                         members: data.members || [],
@@ -330,7 +332,8 @@ const OOSetModelingTool = () => {
             const structure: ProjectStructure = {
                 name: project.structure.name,
                 modules: project.structure.modules,
-                relations: project.structure.relations
+                relations: project.structure.relations,
+                objects: project.structure.objects ?? 0
             };
             if (!projectId) {
                 // Criação
