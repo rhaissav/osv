@@ -126,9 +126,13 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
     }, [project.structure.objects]);
 
     const handleEditClick = () => {
+        if (window.matchMedia && window.matchMedia('print').matches) {
+            return;
+        }
         setEditValue(objects);
         setEditingObjects(true);
     };
+
     const handleEditSave = () => {
         setObjects(editValue);
         setEditingObjects(false);
@@ -136,6 +140,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
         newProject.structure.objects = editValue;
         onUpdate(newProject);
     };
+
     const handleEditCancel = () => {
         setEditingObjects(false);
     };
@@ -245,7 +250,7 @@ const SetTheoryView: React.FC<SetTheoryViewProps> = ({ project, onUpdate }) => {
                                 <div className="w-20 text-center py-1 px-2 rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-xl font-bold text-neutral-900 dark:text-neutral-100">
                                     {typeof objects === 'number' ? objects : 0}
                                 </div>
-                                <button onClick={handleEditClick} className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700">Editar</button>
+                                <button onClick={handleEditClick} className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 print:hidden">Editar</button>
                             </div>
                         )}
                         <div className="text-xs font-medium text-neutral-600 dark:text-neutral-400 text-center leading-tight mt-1">

@@ -38,7 +38,7 @@ export class AuthService {
     if (!user || !(await compare(data.password, user.password_hash))) {
       return null;
     }
-    const token = jwtSign({ sub: user.id, role: user.role }, { expiresIn: '1h' });
+    const token = jwtSign({ sub: user.id, role: user.role }, { expiresIn: '24h' });
     return { token };
   }
 }

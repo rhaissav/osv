@@ -171,6 +171,7 @@ const OOSetModelingTool = () => {
     const [collabError, setCollabError] = useState('');
     const [collabSuccess, setCollabSuccess] = useState('');
     const [collabLoading, setCollabLoading] = useState(false);
+    const [exportingPdf, setExportingPdf] = useState(false);
 
 
     // Carregar dados do projeto se estiver em modo edição
@@ -538,9 +539,10 @@ const OOSetModelingTool = () => {
                                 </Modal>
                             )}
                             <Button
-                                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-xs"
+                                className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={async () => {
-                                    if (!projectId) return;
+                                    if (!projectId || exportingPdf) return;
+                                    setExportingPdf(true);
                                     try {
                                         const { exportProjectPdf } = await import('../api/project');
                                         const pdfBlob = await exportProjectPdf(projectId);
@@ -555,10 +557,13 @@ const OOSetModelingTool = () => {
                                     } catch (err) {
                                         alert('Erro ao exportar PDF');
                                         console.log(err)
+                                    } finally {
+                                        setExportingPdf(false);
                                     }
                                 }}
+                                disabled={exportingPdf}
                             >
-                                Exportar
+                                {exportingPdf ? 'Exportando...' : 'Exportar'}
                             </Button>
                         </div>
                     </div>

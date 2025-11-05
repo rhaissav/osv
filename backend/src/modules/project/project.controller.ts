@@ -77,44 +77,96 @@ export class ProjectController {
   }
 
   async exportToPdf(request: FastifyRequest, reply: FastifyReply) {
-    const puppeteer = await import('puppeteer');
-    const { id } = request.params as any;
-    // @ts-ignore
-    const userId = request.user.sub;
-    const role = await service.getUserRole(id, userId);
-    if (!role) {
-      return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
+    let browser;
+    try {
+      const puppeteer = await import('puppeteer');
+      const { id } = request.params as any;
+      console.log('[PDF] Iniciando exportação para projeto:', id);
+      // @ts-ignore
+      const userId = request.user.sub;
+      console.log('[PDF] userId:', userId);
+      const role = await service.getUserRole(id, userId);
+      console.log('[PDF] role:', role);
+      if (!role) {
+        console.warn('[PDF] Usuário não faz parte do projeto');
+        return reply.code(403).send({ error: 'Acesso negado: você não faz parte deste projeto.' });
+      }
+
+      const authHeader = request.headers['authorization'] || '';
+      const token = authHeader.replace('Bearer ', '');
+      console.log('[PDF] Token extraído, tamanho:', token?.length);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const printViewUrl = `${frontendUrl.replace(/\/$/, '')}/project/${id}/print-view`;
+      console.log('[PDF] frontendUrl:', frontendUrl);
+      console.log('[PDF] printViewUrl:', printViewUrl);
+
+      console.log('[PDF] Lançando navegador Puppeteer...');
+      browser = await puppeteer.default.launch({ 
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      const page = await browser.newPage();
+      
+      console.log('[PDF] Navegando para frontendUrl para setar token...');
+      const respFront = await page.goto(frontendUrl, { 
+        waitUntil: 'domcontentloaded', 
+        timeout: 30000 
+      });
+      console.log('[PDF] Status navegação frontendUrl:', respFront?.status());
+      
+      console.log('[PDF] Setando token no localStorage...');
+      await page.evaluate((token) => {
+        localStorage.setItem('token', token);
+      }, token);
+
+      page.on('console', msg => {
+        console.log('[PDF] PAGE CONSOLE:', msg.text());
+      });
+      page.on('pageerror', error => {
+        console.error('[PDF] PAGE ERROR:', error);
+      });
+      page.on('requestfailed', request => {
+        console.error('[PDF] REQUEST FAILED:', request.url(), request.failure()?.errorText);
+      });
+
+      console.log('[PDF] Navegando para printViewUrl...');
+      const response = await page.goto(printViewUrl, { 
+        waitUntil: 'networkidle0', 
+        timeout: 60000 
+      });
+      console.log('[PDF] Status navegação printViewUrl:', response?.status());
+      
+      const html = await page.content();
+      console.log('[PDF] HTML carregado (primeiros 500 chars):', html?.slice(0, 500));
+      
+      console.log('[PDF] Aguardando renderização...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      console.log('[PDF] Gerando PDF...');
+      const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+      console.log('[PDF] PDF gerado, tamanho:', pdfBuffer?.length);
+      
+      await browser.close();
+
+      reply.header('Content-Type', 'application/pdf');
+      reply.header('Content-Disposition', `attachment; filename="project-${id}.pdf"`);
+      return reply.send(pdfBuffer);
+    } catch (error: any) {
+      console.error('[PDF] Erro ao exportar PDF:', error);
+      console.error('[PDF] Stack trace:', error?.stack);
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          console.error('[PDF] Erro ao fechar navegador:', closeError);
+        }
+      }
+      return reply.code(500).send({ 
+        error: 'Falha ao exportar PDF', 
+        details: error?.message || String(error),
+        stack: error?.stack 
+      });
     }
-
-    const authHeader = request.headers['authorization'] || '';
-    const token = authHeader.replace('Bearer ', '');
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const printViewUrl = `${frontendUrl}/project/${id}/print-view`;
-
-    const browser = await puppeteer.default.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(frontendUrl, { waitUntil: 'domcontentloaded' });
-    await page.evaluate((token) => {
-      localStorage.setItem('token', token);
-    }, token);
-
-    page.on('console', msg => {
-      for (let i = 0; i < msg.args().length; ++i)
-        console.log(`PAGE LOG[${i}]:`, msg.args()[i]);
-      console.log('PAGE LOG:', msg.text());
-    });
-    page.on('pageerror', error => {
-      console.error('PAGE ERROR:', error);
-    });
-
-    await page.goto(printViewUrl, { waitUntil: 'networkidle0' });
-    await new Promise(resolve => setTimeout(resolve, 800));
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
-    await browser.close();
-
-    reply.header('Content-Type', 'application/pdf');
-    reply.header('Content-Disposition', `attachment; filename=\"project-${id}.pdf\"`);
-    return reply.send(pdfBuffer);
   }
 
   async addMember(request: FastifyRequest, reply: FastifyReply) {

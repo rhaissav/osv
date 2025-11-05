@@ -78,6 +78,12 @@ const ClassTypes = [
 
 
 const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode, onClose, onUpdate }) => {
+    // Obter todas as classes do projeto para usar como tipos
+    const availableClasses = initialProject.structure.modules.flatMap(mod =>
+        mod.packages.flatMap(pkg =>
+            pkg.classes.map(cls => cls.name)
+        )
+    );
     const [formData, setFormData] = useState<{
         name: string;
         classType: 'concrete' | 'abstract' | 'interface';
@@ -323,9 +329,16 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                             <select
                                 value={currentAttribute.type}
                                 onChange={e => setCurrentAttribute(prev => ({ ...prev, type: e.target.value }))}
-                                className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition min-w-[100px]"
+                                className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-2 focus:ring-blue-200 transition min-w-[120px]"
                             >
-                                {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                <optgroup label="Tipos Primitivos">
+                                    {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                </optgroup>
+                                {availableClasses.length > 0 && (
+                                    <optgroup label="Classes do Projeto">
+                                        {availableClasses.map(className => <option key={className} value={className}>{className}</option>)}
+                                    </optgroup>
+                                )}
                             </select>
                             <button
                                 type="button"
@@ -372,10 +385,17 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                                 <select
                                     value={currentMethod.returnType}
                                     onChange={e => setCurrentMethod(prev => ({ ...prev, returnType: e.target.value }))}
-                                    className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition min-w-[100px]"
+                                    className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition min-w-[120px]"
                                 >
                                     <option value="void">void</option>
-                                    {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                    <optgroup label="Tipos Primitivos">
+                                        {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                    </optgroup>
+                                    {availableClasses.length > 0 && (
+                                        <optgroup label="Classes do Projeto">
+                                            {availableClasses.map(className => <option key={className} value={className}>{className}</option>)}
+                                        </optgroup>
+                                    )}
                                 </select>
                             </div>
                             <div className="space-y-2">
@@ -409,9 +429,16 @@ const ElementModalForm: React.FC<ModalFormProps> = ({ initialProject, modalMode,
                                     <select
                                         value={currentParameter.type}
                                         onChange={e => setCurrentParameter(prev => ({ ...prev, type: e.target.value }))}
-                                        className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition min-w-[100px]"
+                                        className="px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 focus:ring-2 focus:ring-blue-200 transition min-w-[120px]"
                                     >
-                                        {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                        <optgroup label="Tipos Primitivos">
+                                            {DataTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                        </optgroup>
+                                        {availableClasses.length > 0 && (
+                                            <optgroup label="Classes do Projeto">
+                                                {availableClasses.map(className => <option key={className} value={className}>{className}</option>)}
+                                            </optgroup>
+                                        )}
                                     </select>
                                     <button
                                         type="button"

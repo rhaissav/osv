@@ -124,7 +124,7 @@ export default function Projects() {
                                         <>
                                             <tr key={project.id} className="border-b dark:border-neutral-700 hover:bg-blue-50/50 dark:hover:bg-blue-900/30">
                                                 <td className="px-4 py-2 font-medium flex items-center gap-2">
-                                                    <Link to={`/projects/${project.id}`} className="text-blue-700 dark:text-blue-400 hover:underline">
+                                                    <Link to={`/projects/${project.id}/edit`} className="text-blue-700 dark:text-blue-400 hover:underline">
                                                         {project.title}
                                                     </Link>
                                                 </td>

@@ -7,18 +7,39 @@ const ProjectPrintView = () => {
     const { id } = useParams();
     const [project, setProject] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    console.log('id', id)
+    console.log('projeto', project)
+
 
     useEffect(() => {
         if (id) {
-            getProject(id).then(data => {
-                setProject(data);
-                setLoading(false);
-            });
+            console.log('[PrintView] Buscando projeto com id:', id);
+            getProject(id)
+                .then(data => {
+                    console.log('[PrintView] Projeto carregado:', data);
+                    setProject(data);
+                })
+                .catch(err => {
+                    console.error('[PrintView] Erro ao buscar projeto:', err);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else {
+            console.warn('[PrintView] Nenhum id fornecido para busca do projeto');
+            setLoading(false);
         }
     }, [id]);
 
-    if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Carregando...</div>;
-    if (!project) return <div style={{ padding: 40, textAlign: 'center' }}>Projeto não encontrado</div>;
+
+    if (loading) {
+        console.log('[PrintView] Estado: carregando...');
+        return <div style={{ padding: 40, textAlign: 'center' }}>Carregando...</div>;
+    }
+    if (!project) {
+        console.warn('[PrintView] Projeto não encontrado ou nulo:', project);
+        return <div style={{ padding: 40, textAlign: 'center' }}>Projeto não encontrado</div>;
+    }
 
     // Adapta o objeto para o formato esperado pelo SetTheoryView
     const projectForSetTheory: any = {
