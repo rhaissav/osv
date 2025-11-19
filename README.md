@@ -91,4 +91,4 @@ npm run dev
 
 - **Projetos compartilhados**: proprietário e colaboradores
 - **Controle de acesso**: edição restrita por papel do usuário
-- **Gerenciamento de membros**: adicionar/remover colaboradores
+- **Gerenciamento de membros**: adicionar/remover colaborador
