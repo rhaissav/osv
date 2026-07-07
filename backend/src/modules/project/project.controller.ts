@@ -103,9 +103,19 @@ export class ProjectController {
       console.log('[PDF] Lançando navegador Puppeteer...');
       const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
       browser = await puppeteer.default.launch({
-        headless: true,
+        headless: 'shell',
         ...(executablePath ? { executablePath } : {}),
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--no-zygote',
+          '--single-process',
+          '--disable-software-rasterizer',
+          '--disable-breakpad',
+          '--disable-crash-reporter'
+        ]
       });
       const page = await browser.newPage();
 
