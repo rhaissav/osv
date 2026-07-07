@@ -70,6 +70,53 @@ npm run dev
 # O frontend estará disponível em http://localhost:5173
 ```
 
+## Execução com Docker (Recomendado para Portabilidade)
+
+### 1. Preparar ambiente
+
+```bash
+# Na raiz do projeto
+cp .env.example .env
+
+# Ajuste os valores obrigatórios no .env
+# - JWT_SECRET
+# - SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS
+# - MAIL_FROM
+```
+
+### 2. Subir todo o stack
+
+```bash
+docker compose up --build -d
+```
+
+Serviços após o deploy local com Docker:
+
+- Frontend: http://localhost
+- Backend: http://localhost:3000
+- PostgreSQL: localhost:5433
+
+### 3. Logs e troubleshooting rápido
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f db
+```
+
+### 4. Parar e remover containers
+
+```bash
+docker compose down
+```
+
+Para remover também o volume do banco:
+
+```bash
+docker compose down -v
+```
+
+
 ## Funcionalidades
 
 ### Modelagem
