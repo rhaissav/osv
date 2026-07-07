@@ -116,8 +116,6 @@ Para remover também o volume do banco:
 docker compose down -v
 ```
 
-## Deploy no Render (com Docker)
-
 Estratégia recomendada:
 
 1. PostgreSQL gerenciado pelo Render (não containerizado).
