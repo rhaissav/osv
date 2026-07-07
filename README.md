@@ -116,35 +116,6 @@ Para remover também o volume do banco:
 docker compose down -v
 ```
 
-Estratégia recomendada:
-
-1. PostgreSQL gerenciado pelo Render (não containerizado).
-2. Backend como Web Service (Docker).
-3. Frontend como Web Service (Docker + Nginx) ou Static Site.
-
-Variáveis obrigatórias no backend (Render):
-
-- DATABASE_URL (do PostgreSQL do Render)
-- JWT_SECRET
-- APP_URL (URL do frontend)
-- FRONTEND_URL (URL do frontend)
-- CORS_ORIGIN (URL do frontend)
-- SMTP_HOST
-- SMTP_PORT
-- SMTP_USER
-- SMTP_PASS
-- MAIL_FROM
-
-Variável obrigatória no frontend (build arg ou env de build):
-
-- BACKEND_UPSTREAM (URL pública do backend, usada pelo Nginx)
-
-Notas de produção:
-
-- O backend já está preparado para usar PORT dinâmico do Render.
-- O backend executa prisma migrate deploy no start do container.
-- A exportação PDF usa Puppeteer com Chromium instalado no container.
-- O frontend Docker usa /api internamente e faz proxy para BACKEND_UPSTREAM.
 
 ## Funcionalidades
 
