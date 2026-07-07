@@ -70,6 +70,84 @@ npm run dev
 # O frontend estará disponível em http://localhost:5173
 ```
 
+## Execução com Docker (Recomendado para Portabilidade)
+
+### 1. Preparar ambiente
+
+```bash
+# Na raiz do projeto
+cp .env.example .env
+
+# Ajuste os valores obrigatórios no .env
+# - JWT_SECRET
+# - SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS
+# - MAIL_FROM
+```
+
+### 2. Subir todo o stack
+
+```bash
+docker compose up --build -d
+```
+
+Serviços após o deploy local com Docker:
+
+- Frontend: http://localhost
+- Backend: http://localhost:3000
+- PostgreSQL: localhost:5433
+
+### 3. Logs e troubleshooting rápido
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f db
+```
+
+### 4. Parar e remover containers
+
+```bash
+docker compose down
+```
+
+Para remover também o volume do banco:
+
+```bash
+docker compose down -v
+```
+
+## Deploy no Render (com Docker)
+
+Estratégia recomendada:
+
+1. PostgreSQL gerenciado pelo Render (não containerizado).
+2. Backend como Web Service (Docker).
+3. Frontend como Web Service (Docker + Nginx) ou Static Site.
+
+Variáveis obrigatórias no backend (Render):
+
+- DATABASE_URL (do PostgreSQL do Render)
+- JWT_SECRET
+- APP_URL (URL do frontend)
+- FRONTEND_URL (URL do frontend)
+- CORS_ORIGIN (URL do frontend)
+- SMTP_HOST
+- SMTP_PORT
+- SMTP_USER
+- SMTP_PASS
+- MAIL_FROM
+
+Variável obrigatória no frontend (build arg ou env de build):
+
+- BACKEND_UPSTREAM (URL pública do backend, usada pelo Nginx)
+
+Notas de produção:
+
+- O backend já está preparado para usar PORT dinâmico do Render.
+- O backend executa prisma migrate deploy no start do container.
+- A exportação PDF usa Puppeteer com Chromium instalado no container.
+- O frontend Docker usa /api internamente e faz proxy para BACKEND_UPSTREAM.
+
 ## Funcionalidades
 
 ### Modelagem

@@ -101,19 +101,21 @@ export class ProjectController {
       console.log('[PDF] printViewUrl:', printViewUrl);
 
       console.log('[PDF] Lançando navegador Puppeteer...');
-      browser = await puppeteer.default.launch({ 
+      const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      browser = await puppeteer.default.launch({
         headless: true,
+        ...(executablePath ? { executablePath } : {}),
         args: ['--no-sandbox', '--disable-setuid-sandbox']
       });
       const page = await browser.newPage();
-      
+
       console.log('[PDF] Navegando para frontendUrl para setar token...');
-      const respFront = await page.goto(frontendUrl, { 
-        waitUntil: 'domcontentloaded', 
-        timeout: 30000 
+      const respFront = await page.goto(frontendUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000
       });
       console.log('[PDF] Status navegação frontendUrl:', respFront?.status());
-      
+
       console.log('[PDF] Setando token no localStorage...');
       await page.evaluate((token) => {
         localStorage.setItem('token', token);
@@ -130,22 +132,22 @@ export class ProjectController {
       });
 
       console.log('[PDF] Navegando para printViewUrl...');
-      const response = await page.goto(printViewUrl, { 
-        waitUntil: 'networkidle0', 
-        timeout: 60000 
+      const response = await page.goto(printViewUrl, {
+        waitUntil: 'networkidle0',
+        timeout: 60000
       });
       console.log('[PDF] Status navegação printViewUrl:', response?.status());
-      
+
       const html = await page.content();
       console.log('[PDF] HTML carregado (primeiros 500 chars):', html?.slice(0, 500));
-      
+
       console.log('[PDF] Aguardando renderização...');
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       console.log('[PDF] Gerando PDF...');
       const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
       console.log('[PDF] PDF gerado, tamanho:', pdfBuffer?.length);
-      
+
       await browser.close();
 
       reply.header('Content-Type', 'application/pdf');
@@ -161,10 +163,10 @@ export class ProjectController {
           console.error('[PDF] Erro ao fechar navegador:', closeError);
         }
       }
-      return reply.code(500).send({ 
-        error: 'Falha ao exportar PDF', 
+      return reply.code(500).send({
+        error: 'Falha ao exportar PDF',
         details: error?.message || String(error),
-        stack: error?.stack 
+        stack: error?.stack
       });
     }
   }

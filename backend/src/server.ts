@@ -45,8 +45,9 @@ completeSignupRoutes(server);
 
 const start = async () => {
   try {
-    await server.listen({ port: 3000, host: '0.0.0.0' });
-    console.log('Servidor rodando em http://localhost:3000');
+    const port = Number(process.env.PORT || 3000);
+    await server.listen({ port, host: '0.0.0.0' });
+    console.log(`Servidor rodando na porta ${port}`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
